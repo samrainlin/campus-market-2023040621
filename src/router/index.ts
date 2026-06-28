@@ -1,48 +1,88 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import HomeView from '../views/HomeView.vue'
+import TradeView from '../views/TradeView.vue'
+import LostFoundView from '../views/LostFoundView.vue'
+import GroupBuyView from '../views/GroupBuyView.vue'
+import ErrandView from '../views/ErrandView.vue'
+import PublishView from '../views/PublishView.vue'
+import MessageView from '../views/MessageView.vue'
+import UserCenterView from '../views/UserCenterView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/home',
-    },
-    {
-      path: '/home',
       name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: HomeView,
+      meta: {
+        title: '首页',
+      },
     },
     {
-      path: '/list',
-      name: 'list',
-      component: () => import('@/views/ListView.vue'),
+      path: '/trade',
+      name: 'trade',
+      component: TradeView,
+      meta: {
+        title: '二手交易',
+      },
     },
     {
-      path: '/detail/:id',
-      name: 'detail',
-      component: () => import('@/views/DetailView.vue'),
+      path: '/lost-found',
+      name: 'lostFound',
+      component: LostFoundView,
+      meta: {
+        title: '失物招领',
+      },
+    },
+    {
+      path: '/group-buy',
+      name: 'groupBuy',
+      component: GroupBuyView,
+      meta: {
+        title: '拼单搭子',
+      },
+    },
+    {
+      path: '/errand',
+      name: 'errand',
+      component: ErrandView,
+      meta: {
+        title: '跑腿委托',
+      },
     },
     {
       path: '/publish',
       name: 'publish',
-      component: () => import('@/views/PublishView.vue'),
+      component: PublishView,
+      meta: {
+        title: '发布信息',
+      },
     },
     {
       path: '/message',
       name: 'message',
-      component: () => import('@/views/MessageView.vue'),
+      component: MessageView,
+      meta: {
+        title: '消息中心',
+      },
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
-    },
-    {
-      path: '/board',
-      name: 'board',
-      component: () => import('@/views/BoardView.vue'),
+      path: '/user',
+      name: 'user',
+      component: UserCenterView,
+      meta: {
+        title: '个人中心',
+      },
     },
   ],
+})
+
+router.beforeEach((to, _from, next) => {
+  const title = (to.meta?.title as string) || '校园轻集市'
+  document.title = `${title} - 校园轻集市`
+  next()
 })
 
 export default router

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>失物招领详情 · 校园轻集市</title>
+  <link rel="stylesheet" href="assets/common.css" />
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+  <style>
+    .detail-hero {
+      width: 100%;
+      height: 420px;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+    }
+    .detail-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .detail-hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 32px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+    }
+    .detail-hero-tags { display: flex; gap: 8px; margin-bottom: 12px; }
+    .detail-hero-title { font-size: 26px; font-weight: 700; margin: 0 0 8px 0; }
+    .detail-hero-meta { font-size: 14px; opacity: 0.92; }
+    .reward-badge {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: white;
+      padding: 16px 28px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+      text-align: center;
+    }
+    .reward-label { font-size: 12px; opacity: 0.9; }
+    .reward-value { font-size: 28px; font-weight: 800; line-height: 1.2; }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .detail-main { min-width: 0; }
+
+    .detail-section {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+    .detail-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 0 0 16px 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #F1F5F9;
+    }
+
+    .lost-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .lost-info-item {
+      background: #FEF2F2;
+      border-left: 4px solid #EF4444;
+      padding: 14px 16px;
+      border-radius: 10px;
+    }
+    .lost-info-label {
+      font-size: 12px;
+      color: #991B1B;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .lost-info-value {
+      font-size: 14px;
+      color: #0F172A;
+      font-weight: 600;
+    }
+
+    .description-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #475569;
+    }
+    .description-text p { margin: 0 0 12px 0; }
+    .description-text p:last-child { margin-bottom: 0; }
+
+    .action-row {
+      display: flex;
+      gap: 12px;
+      padding-top: 8px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .action-btn-primary {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+    .action-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+    }
+    .action-btn-secondary {
+      background: white;
+      color: #475569;
+      border: 2px solid #E2E8F0;
+    }
+    .action-btn-secondary:hover {
+      border-color: #F59E0B;
+      color: #F59E0B;
+    }
+    .action-btn-report {
+      background: white;
+      color: #EF4444;
+      border: 2px solid #FECACA;
+      flex: 0 0 auto;
+      padding: 14px 20px;
+    }
+    .action-btn-report:hover {
+      background: #FEF2F2;
+      border-color: #EF4444;
+    }
+
+    .sidebar-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 0 0 14px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #F1F5F9;
+    }
+
+    .author-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #F1F5F9;
+      margin-bottom: 16px;
+    }
+    .author-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .author-info { flex: 1; }
+    .author-name { font-size: 16px; font-weight: 700; color: #0F172A; }
+    .author-college { font-size: 12px; color: #64748B; margin-top: 4px; }
+    .credit-badge {
+      display: inline-block;
+      font-size: 11px;
+      color: #10B981;
+      background: #F0FDF4;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .author-stats {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      padding-top: 4px;
+    }
+    .author-stat-num { font-size: 18px; font-weight: 700; color: #0F172A; }
+    .author-stat-label { font-size: 11px; color: #94A3B8; }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      font-size: 13px;
+      border-bottom: 1px dashed #F1F5F9;
+    }
+    .summary-item:last-child { border-bottom: none; }
+    .summary-label { color: #64748B; }
+    .summary-value { color: #0F172A; font-weight: 600; text-align: right; }
+
+    .recommend-section {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .recommend-card {
+      background: #F8FAFC;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .recommend-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
+    }
+    .recommend-card-image { width: 100%; height: 140px; overflow: hidden; }
+    .recommend-card-image img { width: 100%; height: 100%; object-fit: cover; }
+    .recommend-card-body { padding: 12px 14px; }
+    .recommend-card-title {
+      font-size: 13px;
+      color: #0F172A;
+      margin: 0 0 8px 0;
+      line-height: 1.5;
+      font-weight: 600;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 40px;
+    }
+    .recommend-card-price { font-size: 15px; font-weight: 700; color: #EF4444; }
+
+    .safety-tip {
+      background: #FEF3C7;
+      border-left: 4px solid #F59E0B;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #78350F;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1100px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .recommend-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 800px) {
+      .detail-hero { height: 300px; }
+      .recommend-grid { grid-template-columns: repeat(2, 1fr); }
+      .lost-info-grid { grid-template-columns: 1fr; }
+      .reward-badge { position: static; display: inline-block; margin-top: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a href="home.html" class="nav-logo"><span class="nav-logo-icon">🎓</span><span>校园轻集市</span></a>
+      <div class="nav-menu">
+        <a href="home.html" class="nav-link">首页</a>
+        <a href="category.html" class="nav-link">浏览</a>
+        <a href="publish.html" class="nav-link">发布</a>
+        <a href="messages.html" class="nav-link">消息</a>
+        <a href="profile.html" class="nav-link">我的</a>
+      </div>
+      <div class="nav-right">
+        <a href="login.html" class="btn-secondary" style="padding: 8px 16px; font-size: 13px;">登录</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-container">
+    <!-- 面包屑 -->
+    <div class="breadcrumb">
+      <a href="home.html" class="breadcrumb-link">首页</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="category.html" class="breadcrumb-link">分类浏览</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">失物招领详情</span>
+    </div>
+
+    <!-- 大图 -->
+    <div class="detail-hero">
+      <img src="https://picsum.photos/seed/lostcard1/1200/600" alt="校园卡" />
+      <div class="detail-hero-overlay">
+        <div class="detail-hero-tags">
+          <span class="tag" style="background: #EF4444; color: white;">🔍 寻物启事</span>
+          <span class="tag" style="background: rgba(255,255,255,0.25); color: white;">🆘 紧急寻找</span>
+        </div>
+        <h1 class="detail-hero-title">丢失校园一卡通，学号尾号3829，拾到者重谢！</h1>
+        <div class="detail-hero-meta">📍 三食堂附近 · ⏰ 2026年6月27日中午 · 👁️ 已被浏览 86 次</div>
+      </div>
+      <div class="reward-badge">
+        <div class="reward-label">酬金</div>
+        <div class="reward-value">¥20</div>
+      </div>
+    </div>
+
+    <!-- 布局 -->
+    <div class="detail-layout">
+      <!-- 主内容 -->
+      <div class="detail-main">
+        <div class="detail-section">
+          <h3 class="detail-section-title">📌 失物信息</h3>
+          <div class="lost-info-grid">
+            <div class="lost-info-item">
+              <div class="lost-info-label">物品名称</div>
+              <div class="lost-info-value">校园一卡通（学生卡）</div>
+            </div>
+            <div class="lost-info-item">
+              <div class="lost-info-label">丢失时间</div>
+              <div class="lost-info-value">2026年6月27日 12:00 - 13:30</div>
+            </div>
+            <div class="lost-info-item">
+              <div class="lost-info-label">丢失地点</div>
+              <div class="lost-info-value">第三食堂一楼取餐区</div>
+            </div>
+            <div class="lost-info-item">
+              <div class="lost-info-label">学号尾号</div>
+              <div class="lost-info-value">3829（联系后核对完整信息）</div>
+            </div>
+            <div class="lost-info-item">
+              <div class="lost-info-label">物品特征</div>
+              <div class="lost-info-value">蓝色卡套，卡套上有宇航员图案</div>
+            </div>
+            <div class="lost-info-item">
+              <div class="lost-info-label">酬谢金额</div>
+              <div class="lost-info-value" style="color: #EF4444;">¥20（微信/支付宝/现金）</div>
+            </div>
+          </div>
+
+          <h3 class="detail-section-title" style="margin-top: 24px;">📝 详细描述</h3>
+          <div class="description-text">
+            <p>今天中午在三食堂吃饭时，把校园卡放在餐桌上忘记带走了，大概在12:50离开食堂，13:20回去找的时候已经不在了。食堂阿姨说没有收到同学交来的卡。</p>
+            <p>卡片有一个蓝色的宇航员卡套，卡面上能看到尾号3829，其他信息为保护隐私不在此公布。如果您拾到了，或者知道消息，请务必联系我，非常感谢！</p>
+            <p>👉 如果拾到者同学不方便当面交易，可以把卡片放在<strong>三食堂失物招领台</strong>或者<strong>学生事务中心失物招领处</strong>，我自己去取，同样会给您发红包表示感谢～</p>
+            <p>👉 也可以直接在本页点击"联系发布者"给我发送消息，或扫描下方的二维码联系我。</p>
+            <p>非常感谢各位同学的帮助，校园社区因为大家而温暖！❤️</p>
+          </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">⚡ 快速操作</h3>
+          <div class="action-row">
+            <a href="chat.html" class="action-btn action-btn-primary">💬 联系发布者</a>
+            <button class="action-btn action-btn-secondary" onclick="alert('已收藏，可在个人中心查看')">⭐ 收藏</button>
+            <button class="action-btn action-btn-report" onclick="alert('已收到您的举报，感谢维护社区环境')">🚩 举报</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧栏 -->
+      <div>
+        <!-- 发布者信息 -->
+        <div class="sidebar-card">
+          <div class="author-section">
+            <img src="https://picsum.photos/seed/userlost1/150/150" alt="发布者" class="author-avatar" />
+            <div class="author-info">
+              <div class="author-name">粗心小李</div>
+              <div class="author-college">经管学院 · 大二</div>
+              <span class="credit-badge">✨ 信用优良 · 已实名</span>
+            </div>
+          </div>
+          <div class="author-stats">
+            <div>
+              <div class="author-stat-num">8</div>
+              <div class="author-stat-label">发布</div>
+            </div>
+            <div>
+              <div class="author-stat-num">3</div>
+              <div class="author-stat-label">寻回</div>
+            </div>
+            <div>
+              <div class="author-stat-num">100%</div>
+              <div class="author-stat-label">好评率</div>
+            </div>
+          </div>
+          <a href="chat.html" style="display:block; width: 100%; margin-top: 16px;">
+            <el-button type="danger" size="large" style="width: 100%;">💬 我有线索 · 联系TA</el-button>
+          </a>
+        </div>
+
+        <!-- 信息摘要 -->
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">📋 信息摘要</h3>
+          <div class="summary-item"><span class="summary-label">物品类型</span><span class="summary-value">证件卡片</span></div>
+          <div class="summary-item"><span class="summary-label">状态</span><span class="summary-value" style="color: #EF4444;">寻找中</span></div>
+          <div class="summary-item"><span class="summary-label">发布时间</span><span class="summary-value">3小时前</span></div>
+          <div class="summary-item"><span class="summary-label">最后更新</span><span class="summary-value">1小时前</span></div>
+          <div class="summary-item"><span class="summary-label">浏览次数</span><span class="summary-value">86 次</span></div>
+          <div class="summary-item"><span class="summary-label">信息编号</span><span class="summary-value">#20260627-LOST-07</span></div>
+        </div>
+
+        <!-- 温馨提示 -->
+        <div class="sidebar-card" style="background: #FEF3C7;">
+          <h3 class="sidebar-title" style="color: #A16207;">💡 温馨提示</h3>
+          <div class="safety-tip" style="background: transparent; border: none; padding: 0;">
+            · 拾到他人物品请及时归还或交至失物招领处<br />
+            · 不要轻信非官方的"找回"服务<br />
+            · 如发现冒用他人信息，请立即举报<br />
+            · 学生事务中心失物招领电话：6228-1234
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 相关推荐 -->
+    <div class="recommend-section">
+      <div class="detail-section-title" style="font-size: 18px;">🔗 相关信息 · 你可能也在寻找</div>
+      <div class="recommend-grid">
+        <a href="lost-detail.html" class="recommend-card">
+          <div class="recommend-card-image"><img src="https://picsum.photos/seed/lostrec1/400/250" alt="雨伞" /></div>
+          <div class="recommend-card-body">
+            <h3 class="recommend-card-title">寻找丢失的黑色雨伞，可能在图书馆二楼</h3>
+            <div class="recommend-card-price">¥15 酬谢</div>
+          </div>
+        </a>
+        <a href="lost-detail.html" class="recommend-card">
+          <div class="recommend-card-image"><img src="https://picsum.photos/seed/lostrec2/400/250" alt="耳机盒" /></div>
+          <div class="recommend-card-body">
+            <h3 class="recommend-card-title">【招领】东门打印店附近拾到黑色耳机盒一个</h3>
+            <div class="recommend-card-price" style="color: #64748B;">免费认领</div>
+          </div>
+        </a>
+        <a href="lost-detail.html" class="recommend-card">
+          <div class="recommend-card-image"><img src="https://picsum.photos/seed/lostrec3/400/250" alt="钥匙串" /></div>
+          <div class="recommend-card-body">
+            <h3 class="recommend-card-title">丢失一串钥匙（带小熊挂件），教学楼B座3-4楼</h3>
+            <div class="recommend-card-price">¥30 酬谢</div>
+          </div>
+        </a>
+        <a href="lost-detail.html" class="recommend-card">
+          <div class="recommend-card-image"><img src="https://picsum.photos/seed/lostrec4/400/250" alt="水壶" /></div>
+          <div class="recommend-card-body">
+            <h3 class="recommend-card-title">【招领】操场跑道旁捡到银色保温杯（有贴纸）</h3>
+            <div class="recommend-card-price" style="color: #64748B;">免费认领</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  const { createApp, ref } = Vue
+  const app = createApp({ setup() { return {} } })
+  app.use(ElementPlus)
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }
+  app.mount('body')
+</script>
+</html>
