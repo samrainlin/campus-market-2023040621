@@ -1,107 +1,33 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-type LostType = '寻物启事' | '失物招领'
-
-interface Item {
-  id: number
-  title: string
-  type: LostType
-  location: string
-  lostDate: string
-  author: string
-  image: string
-  reward?: string
-}
+import { ref, computed, onMounted } from 'vue'
+import { getLostFounds, type LostFoundItem } from '../api/lostFound'
+import EmptyState from '../components/EmptyState.vue'
 
 const keyword = ref('')
-const activeType = ref<LostType | '全部'>('全部')
+const activeType = ref<string>('全部')
 const currentPage = ref(1)
 const pageSize = 6
 
-const typeOptions: Array<LostType | '全部'> = ['全部', '寻物启事', '失物招领']
+const typeOptions = ['全部', '寻物', '招领']
 
-const itemList: Item[] = [
-  {
-    id: 1,
-    title: '丢失校园一卡通，卡号尾号 3829',
-    type: '寻物启事',
-    location: '三食堂附近',
-    lostDate: '2026-06-25',
-    author: '粗心小李',
-    image: 'https://picsum.photos/seed/lost1/400/300',
-    reward: '¥20 酬谢',
-  },
-  {
-    id: 2,
-    title: '寻找丢失的黑色长柄雨伞一把',
-    type: '寻物启事',
-    location: '图书馆二楼自习区',
-    lostDate: '2026-06-24',
-    author: '淋雨的同学',
-    image: 'https://picsum.photos/seed/lost2/400/300',
-  },
-  {
-    id: 3,
-    title: '【招领】在二食堂捡到蓝色保温杯',
-    type: '失物招领',
-    location: '二食堂一层',
-    lostDate: '2026-06-26',
-    author: '好心人',
-    image: 'https://picsum.photos/seed/lost3/400/300',
-  },
-  {
-    id: 4,
-    title: 'AirPods Pro 二代遗失，充电盒有贴纸',
-    type: '寻物启事',
-    location: '教学楼 B-303',
-    lostDate: '2026-06-23',
-    author: '失主小王',
-    image: 'https://picsum.photos/seed/lost4/400/300',
-    reward: '¥50 酬谢',
-  },
-  {
-    id: 5,
-    title: '【招领】图书馆一楼捡到车钥匙一串',
-    type: '失物招领',
-    location: '图书馆一楼大厅',
-    lostDate: '2026-06-27',
-    author: '热心读者',
-    image: 'https://picsum.photos/seed/lost5/400/300',
-  },
-  {
-    id: 6,
-    title: '丢失红色书包一个，内有教材若干',
-    type: '寻物启事',
-    location: '北门宿舍 5 号楼楼下',
-    lostDate: '2026-06-22',
-    author: '丢包同学',
-    image: 'https://picsum.photos/seed/lost6/400/300',
-    reward: '¥30 酬谢',
-  },
-  {
-    id: 7,
-    title: '【招领】校园内捡到金色项链一条',
-    type: '失物招领',
-    location: '操场跑道旁',
-    lostDate: '2026-06-26',
-    author: '保安大叔',
-    image: 'https://picsum.photos/seed/lost7/400/300',
-  },
-  {
-    id: 8,
-    title: '遗失银色笔记本电脑（联想拯救者）',
-    type: '寻物启事',
-    location: '三食堂二楼',
-    lostDate: '2026-06-21',
-    author: '失主小张',
-    image: 'https://picsum.photos/seed/lost8/400/300',
-    reward: '¥100 酬谢',
-  },
-]
+const lostFounds = ref<LostFoundItem[]>([])
+
+onMounted(async () => {
+  const res = await getLostFounds()
+  lostFounds.value = res.data
+})
+
+const typeLabel = (type: string): string => {
+  return type === '寻物' ? '寻物启事' : '失物招领'
+}
+
+const filterLabel = (opt: string): string => {
+  if (opt === '全部') return '全部'
+  return typeLabel(opt)
+}
 
 const filteredList = computed(() => {
-  let list = itemList
+  let list = lostFounds.value
   if (activeType.value !== '全部') {
     list = list.filter((item) => item.type === activeType.value)
   }
@@ -110,7 +36,7 @@ const filteredList = computed(() => {
     list = list.filter(
       (item) =>
         item.title.toLowerCase().includes(kw) ||
-        item.author.toLowerCase().includes(kw),
+        item.contact.toLowerCase().includes(kw),
     )
   }
   return list
@@ -119,8 +45,8 @@ const filteredList = computed(() => {
 const totalCount = computed(() => filteredList.value.length)
 const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize)))
 
-const typeBadgeColor = (type: LostType): string => {
-  return type === '寻物启事' ? '#F56C6C' : '#67C23A'
+const typeBadgeColor = (type: string): string => {
+  return type === '寻物' ? '#F56C6C' : '#67C23A'
 }
 
 const handlePageChange = (page: number) => {
@@ -168,7 +94,7 @@ const handlePageChange = (page: number) => {
           :class="{ active: activeType === opt }"
           @click="activeType = opt"
         >
-          {{ opt }}
+          {{ filterLabel(opt) }}
         </button>
       </div>
       <div class="search-stats">
@@ -176,22 +102,28 @@ const handlePageChange = (page: number) => {
       </div>
     </div>
 
-    <!-- 卡片列表 -->
-    <div class="card-grid">
+    <EmptyState v-if="filteredList.length === 0" text="暂无失物招领信息" />
+
+    <div v-else class="card-grid">
       <div v-for="item in filteredList" :key="item.id" class="list-card">
         <div class="card-image-wrap">
-          <img :src="item.image" :alt="item.title" class="card-image" />
+          <img
+            :src="`https://picsum.photos/seed/lost${item.id}/400/300`"
+            :alt="item.title"
+            class="card-image"
+          />
           <span class="card-badge" :style="{ backgroundColor: typeBadgeColor(item.type) }">
-            {{ item.type }}
+            {{ typeLabel(item.type) }}
           </span>
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ item.title }}</h3>
-          <div v-if="item.reward" class="card-reward">{{ item.reward }}</div>
+          <div v-if="item.itemName" class="card-sub">{{ item.itemName }}</div>
+          <div v-if="item.description" class="card-desc">{{ item.description }}</div>
           <div class="card-meta">
             <span class="meta-item">📍 {{ item.location }}</span>
-            <span class="meta-item">🕐 {{ item.lostDate }}</span>
-            <span class="meta-item">👤 {{ item.author }}</span>
+            <span class="meta-item">🕐 {{ item.time }}</span>
+            <span class="meta-item">👤 {{ item.contact }}</span>
           </div>
         </div>
       </div>
@@ -481,13 +413,22 @@ const handlePageChange = (page: number) => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 42px;
 }
 
-.card-reward {
-  font-size: 16px;
-  font-weight: 700;
-  color: #d94848;
+.card-sub {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-meta {

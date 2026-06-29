@@ -1,119 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-interface Item {
-  id: number
-  title: string
-  avgPrice: string
-  location: string
-  time: string
-  currentCount: number
-  needCount: number
-  author: string
-  image: string
-}
+import { ref, computed, onMounted } from 'vue'
+import { getGroupBuys, type GroupBuyItem } from '../api/groupBuy'
+import EmptyState from '../components/EmptyState.vue'
 
 const keyword = ref('')
-const statusFilter = ref<'全部' | '拼团中' | '已成团'>('全部')
+const statusFilter = ref<string>('全部')
 const currentPage = ref(1)
 const pageSize = 6
 
-const itemList: Item[] = [
-  {
-    id: 1,
-    title: '奶茶拼单！一点点3杯起送，差1人',
-    avgPrice: '人均¥18',
-    location: '北门奶茶店',
-    time: '今天 14:00',
-    currentCount: 2,
-    needCount: 3,
-    author: '奶茶爱好者',
-    image: 'https://picsum.photos/seed/meal1/400/300',
-  },
-  {
-    id: 2,
-    title: '食堂午餐拼单，二食堂二楼黄焖鸡',
-    avgPrice: '人均¥22',
-    location: '二食堂二楼',
-    time: '今天 12:00',
-    currentCount: 1,
-    needCount: 4,
-    author: '干饭达人',
-    image: 'https://picsum.photos/seed/meal2/400/300',
-  },
-  {
-    id: 3,
-    title: '拼多多砍一刀，差3个助力',
-    avgPrice: '0元助力',
-    location: '线上',
-    time: '今晚 20:00 前',
-    currentCount: 7,
-    needCount: 10,
-    author: '省钱小能手',
-    image: 'https://picsum.photos/seed/meal3/400/300',
-  },
-  {
-    id: 4,
-    title: '外卖拼单：杨国福麻辣烫',
-    avgPrice: '人均¥28',
-    location: '学生 3 号楼',
-    time: '今晚 18:30',
-    currentCount: 1,
-    needCount: 2,
-    author: '爱吃麻酱',
-    image: 'https://picsum.photos/seed/meal4/400/300',
-  },
-  {
-    id: 5,
-    title: '瑞幸咖啡拼单，新街口店',
-    avgPrice: '人均¥15',
-    location: '新街口商圈',
-    time: '明天 09:00',
-    currentCount: 3,
-    needCount: 4,
-    author: '早八党',
-    image: 'https://picsum.photos/seed/meal5/400/300',
-  },
-  {
-    id: 6,
-    title: '打车拼车：学校 - 高铁站',
-    avgPrice: '人均¥35',
-    location: '南门集合',
-    time: '周五 14:30',
-    currentCount: 1,
-    needCount: 3,
-    author: '周末回家',
-    image: 'https://picsum.photos/seed/meal6/400/300',
-  },
-  {
-    id: 7,
-    title: '美团外卖拼单：汉堡王',
-    avgPrice: '人均¥32',
-    location: '图书馆附近',
-    time: '今天 19:00',
-    currentCount: 2,
-    needCount: 3,
-    author: '饿了的同学',
-    image: 'https://picsum.photos/seed/meal7/400/300',
-  },
-  {
-    id: 8,
-    title: '零食拼单：三只松鼠官方店',
-    avgPrice: '人均¥50',
-    location: '宿舍楼',
-    time: '本周日截止',
-    currentCount: 4,
-    needCount: 6,
-    author: '零食大魔王',
-    image: 'https://picsum.photos/seed/meal8/400/300',
-  },
-]
+const groupBuys = ref<GroupBuyItem[]>([])
+
+onMounted(async () => {
+  const res = await getGroupBuys()
+  groupBuys.value = res.data
+})
 
 const filteredList = computed(() => {
-  let list = itemList
+  let list = groupBuys.value
   if (statusFilter.value !== '全部') {
     list = list.filter((item) => {
-      const isFull = item.currentCount >= item.needCount
+      const isFull = item.currentCount >= item.targetCount
       return statusFilter.value === '拼团中' ? !isFull : isFull
     })
   }
@@ -122,7 +28,7 @@ const filteredList = computed(() => {
     list = list.filter(
       (item) =>
         item.title.toLowerCase().includes(kw) ||
-        item.author.toLowerCase().includes(kw),
+        item.publisher.toLowerCase().includes(kw),
     )
   }
   return list
@@ -131,11 +37,11 @@ const filteredList = computed(() => {
 const totalCount = computed(() => filteredList.value.length)
 const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize)))
 
-const getStatus = (item: Item): { text: string; color: string } => {
-  if (item.currentCount >= item.needCount) {
+const getStatus = (item: GroupBuyItem): { text: string; color: string } => {
+  if (item.currentCount >= item.targetCount) {
     return { text: '已成团', color: '#67C23A' }
   }
-  const diff = item.needCount - item.currentCount
+  const diff = item.targetCount - item.currentCount
   return { text: `还差${diff}人`, color: '#E6A23C' }
 }
 
@@ -204,32 +110,37 @@ const handlePageChange = (page: number) => {
       </div>
     </div>
 
-    <!-- 卡片列表 -->
-    <div class="card-grid">
+    <EmptyState v-if="filteredList.length === 0" text="暂无拼单搭子信息" />
+
+    <div v-else class="card-grid">
       <div v-for="item in filteredList" :key="item.id" class="list-card">
         <div class="card-image-wrap">
-          <img :src="item.image" :alt="item.title" class="card-image" />
+          <img
+            :src="`https://picsum.photos/seed/group${item.id}/400/300`"
+            :alt="item.title"
+            class="card-image"
+          />
           <span class="card-badge" :style="{ backgroundColor: getStatus(item).color }">
             {{ getStatus(item).text }}
           </span>
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ item.title }}</h3>
-          <div class="card-price">{{ item.avgPrice }}</div>
-          <!-- 进度条 -->
+          <div class="card-price">{{ item.type }}</div>
           <div class="progress-wrap">
             <div class="progress-bar">
               <div
                 class="progress-fill"
-                :style="{ width: `${Math.min(100, (item.currentCount / item.needCount) * 100)}%` }"
+                :style="{ width: `${Math.min(100, (item.currentCount / item.targetCount) * 100)}%` }"
               ></div>
             </div>
-            <div class="progress-text">{{ item.currentCount }}/{{ item.needCount }} 人</div>
+            <div class="progress-text">{{ item.currentCount }}/{{ item.targetCount }} 人</div>
           </div>
+          <div v-if="item.description" class="card-desc">{{ item.description }}</div>
           <div class="card-meta">
             <span class="meta-item">📍 {{ item.location }}</span>
-            <span class="meta-item">🕐 {{ item.time }}</span>
-            <span class="meta-item">👤 {{ item.author }}</span>
+            <span class="meta-item">🕐 {{ item.deadline }}</span>
+            <span class="meta-item">👤 {{ item.publisher }}</span>
           </div>
         </div>
       </div>
@@ -555,6 +466,16 @@ const handlePageChange = (page: number) => {
   color: #64748b;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-meta {

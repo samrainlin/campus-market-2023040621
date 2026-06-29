@@ -1,102 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-interface Item {
-  id: number
-  title: string
-  price: string
-  location: string
-  author: string
-  image: string
-  condition: string
-}
+import { ref, computed, onMounted } from 'vue'
+import { getTrades, type TradeItem } from '../api/trade'
+import EmptyState from '../components/EmptyState.vue'
 
 const keyword = ref('')
 const currentPage = ref(1)
 const pageSize = 6
+const trades = ref<TradeItem[]>([])
 
-const itemList: Item[] = [
-  {
-    id: 1,
-    title: '出闲置教材《软件工程导论》，九成新',
-    price: '¥25',
-    location: '图书馆门口',
-    author: '小明同学',
-    image: 'https://picsum.photos/seed/trade1/400/300',
-    condition: '九成新',
-  },
-  {
-    id: 2,
-    title: '自行车代步车（蓝色），保养良好',
-    price: '¥280',
-    location: '北门宿舍区',
-    author: '毕业学长',
-    image: 'https://picsum.photos/seed/trade2/400/300',
-    condition: '八成新',
-  },
-  {
-    id: 3,
-    title: '考研资料合集（数学+英语+政治）',
-    price: '¥120',
-    location: '图书馆一楼',
-    author: '上岸学长',
-    image: 'https://picsum.photos/seed/trade3/400/300',
-    condition: '全新',
-  },
-  {
-    id: 4,
-    title: 'USB 小电风扇（桌面款）',
-    price: '¥35',
-    location: '学生宿舍 3 号楼',
-    author: '小明同学',
-    image: 'https://picsum.photos/seed/trade4/400/300',
-    condition: '九成新',
-  },
-  {
-    id: 5,
-    title: '《高等数学》同济大学第七版',
-    price: '¥20',
-    location: '数学学院',
-    author: '张同学',
-    image: 'https://picsum.photos/seed/trade5/400/300',
-    condition: '八成新',
-  },
-  {
-    id: 6,
-    title: '宿舍收纳三件套（带轮收纳箱）',
-    price: '¥65',
-    location: '南门 3 号楼宿舍',
-    author: '学姐杂货铺',
-    image: 'https://picsum.photos/seed/trade6/400/300',
-    condition: '全新',
-  },
-  {
-    id: 7,
-    title: '英语四级词汇书（乱序版）+ 真题',
-    price: '¥25',
-    location: '外国语学院',
-    author: '四级已过',
-    image: 'https://picsum.photos/seed/trade7/400/300',
-    condition: '九成新',
-  },
-  {
-    id: 8,
-    title: '机械键盘（茶轴），使用半年',
-    price: '¥180',
-    location: '计算机学院',
-    author: '码农同学',
-    image: 'https://picsum.photos/seed/trade8/400/300',
-    condition: '九成新',
-  },
-]
+onMounted(async () => {
+  const res = await getTrades()
+  trades.value = res.data
+})
 
 const filteredList = computed(() => {
-  if (!keyword.value.trim()) return itemList
+  if (!keyword.value.trim()) return trades.value
   const kw = keyword.value.trim().toLowerCase()
-  return itemList.filter(
+  return trades.value.filter(
     (item) =>
       item.title.toLowerCase().includes(kw) ||
-      item.author.toLowerCase().includes(kw),
+      item.publisher.toLowerCase().includes(kw),
   )
 })
 
@@ -111,19 +34,17 @@ const handlePageChange = (page: number) => {
 
 <template>
   <div class="view-page">
-    <!-- 面包屑 -->
     <div class="breadcrumb">
       <router-link to="/" class="breadcrumb-link">首页</router-link>
       <span class="breadcrumb-sep">/</span>
-      <span class="breadcrumb-current">二手市场</span>
+      <span class="breadcrumb-current">二手交易</span>
     </div>
 
-    <!-- 顶部标题栏 -->
     <div class="page-header">
       <div class="header-left">
         <div class="page-title">
           <span class="page-icon">📚</span>
-          <span>二手市场</span>
+          <span>二手交易</span>
         </div>
         <div class="page-subtitle">学生闲置交易专区 · 当面交易更放心</div>
       </div>
@@ -133,7 +54,6 @@ const handlePageChange = (page: number) => {
       </router-link>
     </div>
 
-    <!-- 搜索栏 -->
     <div class="search-bar">
       <div class="search-input">
         <span class="search-icon">🔍</span>
@@ -145,8 +65,9 @@ const handlePageChange = (page: number) => {
       </div>
     </div>
 
-    <!-- 卡片列表 -->
-    <div class="card-grid">
+    <EmptyState v-if="filteredList.length === 0" text="暂无二手交易信息" />
+
+    <div v-else class="card-grid">
       <div v-for="item in filteredList" :key="item.id" class="list-card">
         <div class="card-image-wrap">
           <img :src="item.image" :alt="item.title" class="card-image" />
@@ -154,17 +75,16 @@ const handlePageChange = (page: number) => {
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ item.title }}</h3>
-          <div class="card-price">{{ item.price }}</div>
+          <div class="card-price">¥{{ item.price }}</div>
           <div class="card-meta">
             <span class="meta-item">📍 {{ item.location }}</span>
-            <span class="meta-item">👤 {{ item.author }}</span>
+            <span class="meta-item">👤 {{ item.publisher }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 分页 -->
-    <div class="pagination-box">
+    <div v-if="filteredList.length > 0" class="pagination-box">
       <button
         type="button"
         class="page-btn"
@@ -193,7 +113,6 @@ const handlePageChange = (page: number) => {
   gap: 20px;
 }
 
-/* 面包屑 */
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -208,20 +127,15 @@ const handlePageChange = (page: number) => {
   transition: color 0.2s ease;
 }
 
-.breadcrumb-link:hover {
-  color: #2B6CB0;
-}
+.breadcrumb-link:hover { color: #2B6CB0; }
 
-.breadcrumb-sep {
-  color: #cbd5e1;
-}
+.breadcrumb-sep { color: #cbd5e1; }
 
 .breadcrumb-current {
   color: #1e293b;
   font-weight: 500;
 }
 
-/* 页面标题栏 */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -244,9 +158,7 @@ const handlePageChange = (page: number) => {
   color: #1e293b;
 }
 
-.page-icon {
-  font-size: 28px;
-}
+.page-icon { font-size: 28px; }
 
 .page-subtitle {
   font-size: 13px;
@@ -273,7 +185,6 @@ const handlePageChange = (page: number) => {
   box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
 }
 
-/* 搜索栏 */
 .search-bar {
   display: flex;
   align-items: center;
@@ -317,9 +228,7 @@ const handlePageChange = (page: number) => {
   font-family: inherit;
 }
 
-.search-input input::placeholder {
-  color: #94a3b8;
-}
+.search-input input::placeholder { color: #94a3b8; }
 
 .clear-btn {
   width: 18px;
@@ -336,11 +245,10 @@ const handlePageChange = (page: number) => {
   justify-content: center;
   padding: 0;
   flex-shrink: 0;
+  border: none;
 }
 
-.clear-btn:hover {
-  background: #f56c6c;
-}
+.clear-btn:hover { background: #f56c6c; }
 
 .search-stats {
   font-size: 13px;
@@ -352,7 +260,6 @@ const handlePageChange = (page: number) => {
   font-weight: 700;
 }
 
-/* 卡片网格 */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -388,9 +295,7 @@ const handlePageChange = (page: number) => {
   transition: transform 0.4s ease;
 }
 
-.list-card:hover .card-image {
-  transform: scale(1.05);
-}
+.list-card:hover .card-image { transform: scale(1.05); }
 
 .card-badge {
   position: absolute;
@@ -402,7 +307,6 @@ const handlePageChange = (page: number) => {
   font-size: 11px;
   font-weight: 600;
   border-radius: 999px;
-  backdrop-filter: blur(4px);
 }
 
 .card-body {
@@ -444,7 +348,6 @@ const handlePageChange = (page: number) => {
   color: #64748b;
 }
 
-/* 分页 */
 .pagination-box {
   display: flex;
   justify-content: center;
@@ -485,34 +388,17 @@ const handlePageChange = (page: number) => {
 }
 
 @media (max-width: 1100px) {
-  .card-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .card-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 800px) {
-  .card-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .search-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-input {
-    max-width: none;
-  }
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .search-bar { flex-direction: column; align-items: stretch; }
+  .search-input { max-width: none; }
 }
 
 @media (max-width: 500px) {
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .card-grid { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; align-items: flex-start; }
 }
 </style>

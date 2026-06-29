@@ -1,0 +1,280 @@
+{
+  "trades": [
+    {
+      "id": 1,
+      "title": "《线性代数》同济第六版 九成新 无笔记",
+      "price": 15,
+      "category": "书籍教材",
+      "condition": "九成新",
+      "publisher": "张同学",
+      "publishTime": "2025-03-15 10:30",
+      "location": "东区3号楼",
+      "image": "https://picsum.photos/seed/trade1/400/300",
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "title": "小米充电宝 20000mAh 支持 PD 快充",
+      "price": 68,
+      "category": "电子数码",
+      "condition": "八成新",
+      "publisher": "李同学",
+      "publishTime": "2025-03-14 16:20",
+      "location": "西区图书馆",
+      "image": "https://picsum.photos/seed/trade2/400/300",
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "title": "考研英语红宝书 + 真题解析 全套出售",
+      "price": 45,
+      "category": "书籍教材",
+      "condition": "七成新",
+      "publisher": "王同学",
+      "publishTime": "2025-03-13 20:15",
+      "location": "北区研究生公寓",
+      "image": "https://picsum.photos/seed/trade3/400/300",
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "title": "折叠自行车 通勤神器 骑行1个月",
+      "price": 220,
+      "category": "生活用品",
+      "condition": "九成新",
+      "publisher": "赵同学",
+      "publishTime": "2025-03-12 09:45",
+      "location": "南门宿舍区",
+      "image": "https://picsum.photos/seed/trade4/400/300",
+      "status": "open"
+    },
+    {
+      "id": 5,
+      "title": "罗技鼠标 M185 办公静音 仅拆封",
+      "price": 35,
+      "category": "电子数码",
+      "condition": "全新",
+      "publisher": "钱同学",
+      "publishTime": "2025-03-11 14:00",
+      "location": "东区2号楼",
+      "image": "https://picsum.photos/seed/trade5/400/300",
+      "status": "open"
+    },
+    {
+      "id": 6,
+      "title": "宿舍小台灯 USB 充电 三档调光",
+      "price": 28,
+      "category": "生活用品",
+      "condition": "九成新",
+      "publisher": "孙同学",
+      "publishTime": "2025-03-10 21:30",
+      "location": "西区6号楼",
+      "image": "https://picsum.photos/seed/trade6/400/300",
+      "status": "closed"
+    }
+  ],
+  "lostFounds": [
+    {
+      "id": 1,
+      "title": "寻找黑色双肩包",
+      "type": "寻物",
+      "itemName": "黑色双肩包（含笔记本电脑）",
+      "location": "第一教学楼3楼走廊",
+      "time": "2025-03-15 08:30",
+      "contact": "13800138001",
+      "description": "黑色双肩包一个，内有笔记本电脑和几本教材。在一教3楼卫生间附近遗失，如有拾到请联系，必有酬谢！",
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "title": "拾到学生证一张",
+      "type": "招领",
+      "itemName": "学生证（信息工程学院）",
+      "location": "图书馆一楼自习区",
+      "time": "2025-03-14 19:00",
+      "contact": "13800138002",
+      "description": "在图书馆一楼靠窗座位上拾到学生证一张，证件主人为信息工程学院同学。请失主联系我领取。",
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "title": "寻找蓝色雨伞",
+      "type": "寻物",
+      "itemName": "蓝色长柄雨伞",
+      "location": "食堂二楼门口",
+      "time": "2025-03-13 12:00",
+      "contact": "13800138003",
+      "description": "蓝色长柄雨伞一把，伞柄上有小熊挂饰。在食堂二楼门口遗失，对我很重要，希望好心人归还！",
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "title": "拾到 AirPods Pro 耳机",
+      "type": "招领",
+      "itemName": "白色 AirPods Pro 充电盒",
+      "location": "操场跑道",
+      "time": "2025-03-12 07:00",
+      "contact": "13800138004",
+      "description": "在操场晨跑时在跑道边拾到白色耳机充电盒一个，有细微划痕。请失主描述耳机特征后领取。",
+      "status": "open"
+    },
+    {
+      "id": 5,
+      "title": "寻找一串钥匙",
+      "type": "寻物",
+      "itemName": "钥匙串（含宿舍钥匙和U盘）",
+      "location": "西区篮球场",
+      "time": "2025-03-11 17:30",
+      "contact": "13800138005",
+      "description": "钥匙串上有银色小熊挂件、宿舍钥匙、U盘各一。篮球场打完球后遗失，急寻！",
+      "status": "closed"
+    },
+    {
+      "id": 6,
+      "title": "拾到校园一卡通",
+      "type": "招领",
+      "itemName": "校园一卡通（有卡通贴纸）",
+      "location": "教学楼B座二楼",
+      "time": "2025-03-10 10:15",
+      "contact": "13800138006",
+      "description": "拾到校园卡一张，卡面贴有Hello Kitty卡通贴纸。请失主联系我，我在信息学院办公室。",
+      "status": "open"
+    }
+  ],
+  "groupBuys": [
+    {
+      "id": 1,
+      "title": "瑞幸咖啡拼单 生椰拿铁9.9元",
+      "type": "奶茶饮品",
+      "targetCount": 5,
+      "currentCount": 3,
+      "deadline": "2025-03-15 15:00",
+      "location": "东门瑞幸自提点",
+      "publisher": "周同学",
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "title": "京东超市拼单 满199减30 洗衣液纸巾",
+      "type": "生活用品",
+      "targetCount": 3,
+      "currentCount": 2,
+      "deadline": "2025-03-16 22:00",
+      "location": "南区1号楼楼下",
+      "publisher": "吴同学",
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "title": "美团外卖拼单 麻辣香锅 满30减10",
+      "type": "外卖拼餐",
+      "targetCount": 4,
+      "currentCount": 4,
+      "deadline": "2025-03-14 12:30",
+      "location": "北区宿舍",
+      "publisher": "郑同学",
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "title": "期末复习资料打印 100页起印更便宜",
+      "type": "学习用品",
+      "targetCount": 6,
+      "currentCount": 2,
+      "deadline": "2025-03-20 18:00",
+      "location": "图书馆打印店",
+      "publisher": "冯同学",
+      "status": "open"
+    },
+    {
+      "id": 5,
+      "title": "淘宝购物节拼单 宿舍收纳盒 满200减30",
+      "type": "生活用品",
+      "targetCount": 4,
+      "currentCount": 1,
+      "deadline": "2025-03-18 20:00",
+      "location": "西区宿舍区",
+      "publisher": "陈同学",
+      "status": "open"
+    },
+    {
+      "id": 6,
+      "title": "喜茶拼单 第二杯半价 多肉葡萄",
+      "type": "奶茶饮品",
+      "targetCount": 2,
+      "currentCount": 1,
+      "deadline": "2025-03-15 14:30",
+      "location": "校门口喜茶",
+      "publisher": "杨同学",
+      "status": "closed"
+    }
+  ],
+  "errands": [
+    {
+      "id": 1,
+      "title": "求代取快递 菜鸟驿站 大箱子",
+      "taskType": "取快递",
+      "reward": 8,
+      "pickupLocation": "西区菜鸟驿站",
+      "deliveryLocation": "东区5号楼",
+      "deadline": "2025-03-15 18:00",
+      "publisher": "许同学",
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "title": "求带饭 食堂二楼 黄焖鸡米饭",
+      "taskType": "带饭代买",
+      "reward": 5,
+      "pickupLocation": "第二食堂二楼",
+      "deliveryLocation": "北区研究生公寓3号楼",
+      "deadline": "2025-03-15 12:30",
+      "publisher": "沈同学",
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "title": "求代打印 毕业论文 200页 双面黑白",
+      "taskType": "文印服务",
+      "reward": 20,
+      "pickupLocation": "图书馆打印店",
+      "deliveryLocation": "信息学院办公室",
+      "deadline": "2025-03-16 10:00",
+      "publisher": "韩同学",
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "title": "求代取外卖 饿了么订单 已经在门口",
+      "taskType": "取外卖",
+      "reward": 6,
+      "pickupLocation": "南门外卖柜",
+      "deliveryLocation": "南区2号楼",
+      "deadline": "2025-03-15 19:00",
+      "publisher": "朱同学",
+      "status": "open"
+    },
+    {
+      "id": 5,
+      "title": "求帮忙搬行李 从东区搬到南区",
+      "taskType": "搬运服务",
+      "reward": 40,
+      "pickupLocation": "东区3号楼",
+      "deliveryLocation": "南区4号楼",
+      "deadline": "2025-03-16 15:00",
+      "publisher": "秦同学",
+      "status": "open"
+    },
+    {
+      "id": 6,
+      "title": "求代买教材 新图书馆教材科 《高等数学》",
+      "taskType": "代购代买",
+      "reward": 10,
+      "pickupLocation": "新图书馆教材服务中心",
+      "deliveryLocation": "东区1号楼",
+      "deadline": "2025-03-17 09:00",
+      "publisher": "尤同学",
+      "status": "closed"
+    }
+  ]
+}

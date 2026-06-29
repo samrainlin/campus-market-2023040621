@@ -1,111 +1,26 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-interface Item {
-  id: number
-  title: string
-  reward: string
-  pickup: string
-  delivery: string
-  deadline: string
-  author: string
-  image: string
-}
+import { ref, computed, onMounted } from 'vue'
+import { getErrands, type ErrandItem } from '../api/errand'
+import EmptyState from '../components/EmptyState.vue'
 
 const keyword = ref('')
 const currentPage = ref(1)
 const pageSize = 6
 
-const itemList: Item[] = [
-  {
-    id: 1,
-    title: '代取快递，菜鸟驿站顺丰均可',
-    reward: '¥3/件',
-    pickup: '菜鸟驿站 3 号',
-    delivery: '学生 3 号楼楼下',
-    deadline: '今天 18:00 前',
-    author: '跑腿小王',
-    image: 'https://picsum.photos/seed/err1/400/300',
-  },
-  {
-    id: 2,
-    title: '代购打印店资料（A4黑白）',
-    reward: '¥5 起',
-    pickup: '校门西侧打印店',
-    delivery: '教学楼 A-201',
-    deadline: '今天 10:00 前',
-    author: '打印小能手',
-    image: 'https://picsum.photos/seed/err2/400/300',
-  },
-  {
-    id: 3,
-    title: '食堂代买：南区一楼盖浇饭',
-    reward: '¥2 + 餐费',
-    pickup: '南区食堂一楼',
-    delivery: '图书馆四楼',
-    deadline: '今天 12:30 前',
-    author: '勤工俭学',
-    image: 'https://picsum.photos/seed/err3/400/300',
-  },
-  {
-    id: 4,
-    title: '帮忙去教务处签字盖章',
-    reward: '¥15',
-    pickup: '教务处办公室',
-    delivery: '主楼 101',
-    deadline: '明天 16:00 前',
-    author: '有经验的学长',
-    image: 'https://picsum.photos/seed/err4/400/300',
-  },
-  {
-    id: 5,
-    title: '代取药（校医院处方）',
-    reward: '¥8',
-    pickup: '校医院药房',
-    delivery: '宿舍 5 号楼 302',
-    deadline: '今天 17:00 前',
-    author: '靠谱同学',
-    image: 'https://picsum.photos/seed/err5/400/300',
-  },
-  {
-    id: 6,
-    title: '帮忙寄快递（上门取件）',
-    reward: '¥5',
-    pickup: '宿舍 2 号楼',
-    delivery: '菜鸟驿站寄件',
-    deadline: '今天 20:00 前',
-    author: '闲置同学',
-    image: 'https://picsum.photos/seed/err6/400/300',
-  },
-  {
-    id: 7,
-    title: '代购咖啡店饮品（3杯内）',
-    reward: '¥3',
-    pickup: '南门瑞幸咖啡',
-    delivery: '计算机学院 3 层',
-    deadline: '今天 15:00 前',
-    author: '顺路同学',
-    image: 'https://picsum.photos/seed/err7/400/300',
-  },
-  {
-    id: 8,
-    title: '帮忙搬书（宿舍迁移）',
-    reward: '¥30',
-    pickup: '3 号楼 4 楼',
-    delivery: '5 号楼 2 楼',
-    deadline: '本周六',
-    author: '力大无穷',
-    image: 'https://picsum.photos/seed/err8/400/300',
-  },
-]
+const errands = ref<ErrandItem[]>([])
+
+onMounted(async () => {
+  const res = await getErrands()
+  errands.value = res.data
+})
 
 const filteredList = computed(() => {
-  if (!keyword.value.trim()) return itemList
+  if (!keyword.value.trim()) return errands.value
   const kw = keyword.value.trim().toLowerCase()
-  return itemList.filter(
+  return errands.value.filter(
     (item) =>
       item.title.toLowerCase().includes(kw) ||
-      item.author.toLowerCase().includes(kw),
+      item.publisher.toLowerCase().includes(kw),
   )
 })
 
@@ -154,29 +69,36 @@ const handlePageChange = (page: number) => {
       </div>
     </div>
 
-    <!-- 卡片列表 -->
-    <div class="card-grid">
+    <EmptyState v-if="filteredList.length === 0" text="暂无跑腿委托信息" />
+
+    <div v-else class="card-grid">
       <div v-for="item in filteredList" :key="item.id" class="list-card">
         <div class="card-image-wrap">
-          <img :src="item.image" :alt="item.title" class="card-image" />
-          <span class="card-badge">{{ item.reward }}</span>
+          <img
+            :src="`https://picsum.photos/seed/err${item.id}/400/300`"
+            :alt="item.title"
+            class="card-image"
+          />
+          <span class="card-badge">¥{{ item.reward }}</span>
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ item.title }}</h3>
+          <div v-if="item.taskType" class="card-sub">{{ item.taskType }}</div>
+          <div v-if="item.description" class="card-desc">{{ item.description }}</div>
           <div class="card-info">
             <div class="info-row">
               <span class="info-label">起点</span>
-              <span class="info-value">{{ item.pickup }}</span>
+              <span class="info-value">{{ item.pickupLocation }}</span>
             </div>
             <div class="info-arrow">↓</div>
             <div class="info-row">
               <span class="info-label">终点</span>
-              <span class="info-value">{{ item.delivery }}</span>
+              <span class="info-value">{{ item.deliveryLocation }}</span>
             </div>
           </div>
           <div class="card-meta">
             <span class="meta-item deadline">⏰ {{ item.deadline }}</span>
-            <span class="meta-item">👤 {{ item.author }}</span>
+            <span class="meta-item">👤 {{ item.publisher }}</span>
           </div>
         </div>
       </div>
@@ -445,6 +367,22 @@ const handlePageChange = (page: number) => {
 }
 
 /* 起点终点信息 */
+.card-sub {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .card-info {
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
