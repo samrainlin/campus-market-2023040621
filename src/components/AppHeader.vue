@@ -10,12 +10,23 @@
       </div>
 
       <AppNav />
+
+      <div class="user-mini">
+        <img class="user-avatar" :src="userStore.avatar" alt="avatar" />
+        <div class="user-text">
+          <span class="user-name">{{ userStore.displayName }}</span>
+          <span class="user-profile">{{ userStore.profileText }}</span>
+        </div>
+      </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import AppNav from './AppNav.vue'
+import { useUserStore } from '../stores/user'
+
+const userStore = useUserStore()
 </script>
 
 <style scoped>
@@ -68,8 +79,42 @@ import AppNav from './AppNav.vue'
   color: rgba(255, 255, 255, 0.75);
 }
 
+.user-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: #fff;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-profile {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
 @media (max-width: 768px) {
   .slogan {
+    display: none;
+  }
+  .user-profile {
     display: none;
   }
 }

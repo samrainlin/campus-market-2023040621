@@ -2,6 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { getLostFounds, type LostFoundItem } from '../api/lostFound'
 import EmptyState from '../components/EmptyState.vue'
+import { useFavoriteStore, type FavoriteItem } from '../stores/favorite'
+
+const favoriteStore = useFavoriteStore()
 
 const keyword = ref('')
 const activeType = ref<string>('全部')
@@ -124,6 +127,23 @@ const handlePageChange = (page: number) => {
             <span class="meta-item">📍 {{ item.location }}</span>
             <span class="meta-item">🕐 {{ item.time }}</span>
             <span class="meta-item">👤 {{ item.contact }}</span>
+          </div>
+          <div class="card-actions">
+            <button
+              class="favorite-btn"
+              :class="{ active: item.id && favoriteStore.isFavorite('lostFound', item.id) }"
+              @click="
+                item.id && favoriteStore.toggleFavorite({
+                  id: item.id,
+                  type: 'lostFound',
+                  title: item.title,
+                  description: item.description,
+                  location: item.location,
+                })
+              "
+            >
+              {{ item.id && favoriteStore.isFavorite('lostFound', item.id) ? '已收藏' : '收藏' }}
+            </button>
           </div>
         </div>
       </div>
@@ -507,6 +527,34 @@ const handlePageChange = (page: number) => {
   .type-filter {
     flex-wrap: wrap;
   }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.favorite-btn {
+  padding: 6px 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.favorite-btn:hover {
+  border-color: #f56c6c;
+  color: #f56c6c;
+}
+
+.favorite-btn.active {
+  background: #f56c6c;
+  color: #ffffff;
+  border-color: #f56c6c;
 }
 
 @media (max-width: 500px) {

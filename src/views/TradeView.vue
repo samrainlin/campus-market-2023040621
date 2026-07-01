@@ -2,6 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { getTrades, type TradeItem } from '../api/trade'
 import EmptyState from '../components/EmptyState.vue'
+import { useFavoriteStore, type FavoriteItem } from '../stores/favorite'
+
+const favoriteStore = useFavoriteStore()
 
 const keyword = ref('')
 const currentPage = ref(1)
@@ -79,6 +82,23 @@ const handlePageChange = (page: number) => {
           <div class="card-meta">
             <span class="meta-item">📍 {{ item.location }}</span>
             <span class="meta-item">👤 {{ item.publisher }}</span>
+          </div>
+          <div class="card-actions">
+            <button
+              class="favorite-btn"
+              :class="{ active: item.id && favoriteStore.isFavorite('trade', item.id) }"
+              @click="
+                item.id && favoriteStore.toggleFavorite({
+                  id: item.id,
+                  type: 'trade',
+                  title: item.title,
+                  description: item.description || '',
+                  location: item.location,
+                })
+              "
+            >
+              {{ item.id && favoriteStore.isFavorite('trade', item.id) ? '已收藏' : '收藏' }}
+            </button>
           </div>
         </div>
       </div>
@@ -395,6 +415,34 @@ const handlePageChange = (page: number) => {
   .card-grid { grid-template-columns: repeat(2, 1fr); }
   .search-bar { flex-direction: column; align-items: stretch; }
   .search-input { max-width: none; }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.favorite-btn {
+  padding: 6px 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.favorite-btn:hover {
+  border-color: #409eff;
+  color: #409eff;
+}
+
+.favorite-btn.active {
+  background: #409eff;
+  color: #ffffff;
+  border-color: #409eff;
 }
 
 @media (max-width: 500px) {

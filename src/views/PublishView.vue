@@ -7,12 +7,14 @@ import { createTrade } from '../api/trade'
 import { createLostFound } from '../api/lostFound'
 import { createGroupBuy } from '../api/groupBuy'
 import { createErrand } from '../api/errand'
+import { useUserStore } from '../stores/user'
 
 type PublishType = 'trade' | 'lostFound' | 'groupBuy' | 'errand'
 
 const router = useRouter()
 const publishType = ref<PublishType>('trade')
 const submitting = ref(false)
+const userStore = useUserStore()
 
 const form = reactive({
   title: '',
@@ -134,7 +136,7 @@ async function handleSubmit() {
         price: form.price,
         condition: form.condition,
         location: form.location,
-        publisher: '当前用户',
+        publisher: userStore.displayName,
         publishTime: getCurrentTime(),
         image: `https://picsum.photos/seed/trade-${Date.now()}/400/300`,
         status: 'open',
@@ -152,7 +154,7 @@ async function handleSubmit() {
         itemName: form.itemName,
         location: form.location,
         time: form.eventTime,
-        contact: '站内消息联系',
+        contact: userStore.displayName,
         status: 'open',
         description: form.description,
       })
@@ -169,7 +171,7 @@ async function handleSubmit() {
         currentCount: 1,
         deadline: form.deadline,
         location: form.location,
-        publisher: '当前用户',
+        publisher: userStore.displayName,
         status: 'open',
         description: form.description,
       })
@@ -186,7 +188,7 @@ async function handleSubmit() {
         pickupLocation: form.from,
         deliveryLocation: form.to,
         deadline: form.deadline,
-        publisher: '当前用户',
+        publisher: userStore.displayName,
         status: 'open',
         description: form.description,
       })

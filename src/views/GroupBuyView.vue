@@ -2,6 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { getGroupBuys, type GroupBuyItem } from '../api/groupBuy'
 import EmptyState from '../components/EmptyState.vue'
+import { useFavoriteStore, type FavoriteItem } from '../stores/favorite'
+
+const favoriteStore = useFavoriteStore()
 
 const keyword = ref('')
 const statusFilter = ref<string>('全部')
@@ -141,6 +144,23 @@ const handlePageChange = (page: number) => {
             <span class="meta-item">📍 {{ item.location }}</span>
             <span class="meta-item">🕐 {{ item.deadline }}</span>
             <span class="meta-item">👤 {{ item.publisher }}</span>
+          </div>
+          <div class="card-actions">
+            <button
+              class="favorite-btn"
+              :class="{ active: item.id && favoriteStore.isFavorite('groupBuy', item.id) }"
+              @click="
+                item.id && favoriteStore.toggleFavorite({
+                  id: item.id,
+                  type: 'groupBuy',
+                  title: item.title,
+                  description: item.description || '',
+                  location: item.location,
+                })
+              "
+            >
+              {{ item.id && favoriteStore.isFavorite('groupBuy', item.id) ? '已收藏' : '收藏' }}
+            </button>
           </div>
         </div>
       </div>
@@ -554,6 +574,34 @@ const handlePageChange = (page: number) => {
   .type-filter {
     flex-wrap: wrap;
   }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.favorite-btn {
+  padding: 6px 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.favorite-btn:hover {
+  border-color: #e6a23c;
+  color: #e6a23c;
+}
+
+.favorite-btn.active {
+  background: #e6a23c;
+  color: #ffffff;
+  border-color: #e6a23c;
 }
 
 @media (max-width: 500px) {
