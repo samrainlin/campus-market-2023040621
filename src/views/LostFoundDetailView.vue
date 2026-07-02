@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getLostFound, getLostFounds, type LostFoundItem } from '../api/lostFound'
+import { useUserStore } from '../stores/user'
 
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 
 const lostFound = ref<LostFoundItem | null>(null)
 const allLostFounds = ref<LostFoundItem[]>([])
@@ -31,6 +34,20 @@ const isLost = computed(() => lostFound.value?.type === '寻物')
 
 function showAlert(msg: string) {
   window.alert(msg)
+}
+
+function startChatWithPublisher() {
+  if (!userStore.isLoggedIn) {
+    window.alert('请先登录后再发起私信')
+    router.push('/login')
+    return
+  }
+  const publisher = lostFound.value?.contact
+  if (publisher) {
+    router.push(`/chat/${encodeURIComponent(publisher)}`)
+  } else {
+    router.push('/message')
+  }
 }
 
 onMounted(() => {
@@ -102,9 +119,9 @@ onMounted(() => {
         <div class="detail-section">
           <h3 class="detail-section-title">⚡ 快速操作</h3>
           <div class="action-row">
-            <RouterLink to="/message" class="action-btn action-btn-primary" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+            <button class="action-btn action-btn-primary" @click="startChatWithPublisher" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
               💬 联系发布者
-            </RouterLink>
+            </button>
             <button class="action-btn action-btn-secondary" @click="showAlert('已收藏')">⭐ 收藏</button>
             <button class="action-btn action-btn-report" @click="showAlert('已收到您的举报')">🚩 举报</button>
           </div>
@@ -126,11 +143,9 @@ onMounted(() => {
             <div><div class="author-stat-num">3</div><div class="author-stat-label">寻回</div></div>
             <div><div class="author-stat-num">100%</div><div class="author-stat-label">好评率</div></div>
           </div>
-          <RouterLink to="/message" style="display:block; width: 100%; margin-top: 16px;">
-            <el-button :type="isLost ? 'danger' : 'primary'" size="large" style="width: 100%;">
-              💬 {{ isLost ? '我有线索 · 联系TA' : '联系认领' }}
-            </el-button>
-          </RouterLink>
+          <button @click="startChatWithPublisher" class="sidebar-contact-btn" :style="{ background: isLost ? '#EF4444' : '#10B981', width: '100%' }">
+            💬 {{ isLost ? '我有线索 · 联系TA' : '联系认领' }}
+          </button>
         </div>
 
         <div class="sidebar-card">

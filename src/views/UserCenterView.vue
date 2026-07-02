@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useFavoriteStore } from '../stores/favorite'
 import { useUserStore } from '../stores/user'
 import { getTrades, type TradeItem } from '../api/trade'
@@ -145,12 +146,6 @@ const favoriteTypeLabels: Record<string, string> = {
   errand: '跑腿委托',
 }
 
-const favoritesSection = ref<HTMLElement | null>(null)
-
-function scrollToFavorites() {
-  favoritesSection.value?.scrollIntoView({ behavior: 'smooth' })
-}
-
 onMounted(() => {
   loadAllData()
 })
@@ -181,10 +176,10 @@ onMounted(() => {
             <div class="stat-num">{{ totalPublished }}</div>
             <div class="stat-label">我的发布</div>
           </RouterLink>
-          <div class="stat-block">
+          <RouterLink to="/user/favorites" class="stat-block">
             <div class="stat-num">{{ totalFavorites }}</div>
             <div class="stat-label">我的收藏</div>
-          </div>
+          </RouterLink>
           <div class="stat-block">
             <div class="stat-num">{{ completedCount }}</div>
             <div class="stat-label">已完成</div>
@@ -198,11 +193,11 @@ onMounted(() => {
           <div class="action-card-title">我的发布</div>
           <div class="action-card-sub">管理你发布的所有信息</div>
         </RouterLink>
-        <a class="action-card" @click="scrollToFavorites">
+        <RouterLink to="/user/favorites" class="action-card">
           <div class="action-card-icon">⭐</div>
           <div class="action-card-title">我的收藏</div>
           <div class="action-card-sub">已收藏的优质信息</div>
-        </a>
+        </RouterLink>
         <RouterLink to="/message" class="action-card">
           <div class="action-card-icon">💬</div>
           <div class="action-card-title">消息中心</div>
@@ -217,7 +212,7 @@ onMounted(() => {
 
       <div class="main-layout">
         <div>
-          <div ref="favoritesSection" class="section-card">
+          <div class="section-card">
             <div class="section-title">
               <span>⭐ 我的收藏</span>
               <span class="count-badge">共 {{ totalFavorites }} 条</span>
@@ -378,6 +373,8 @@ onMounted(() => {
   height: 400px;
   background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
   border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .avatar-lg {
@@ -431,6 +428,15 @@ onMounted(() => {
   text-decoration: none;
   color: white;
   cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.stat-block:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .stat-num {
@@ -465,6 +471,11 @@ onMounted(() => {
 .action-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  background: #F8FAFC;
+}
+
+.action-card:hover .action-card-title {
+  color: #2563EB;
 }
 
 .action-card-icon {
@@ -476,6 +487,7 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 700;
   color: #0F172A;
+  transition: color 0.2s;
 }
 
 .action-card-sub {
@@ -523,6 +535,15 @@ onMounted(() => {
   color: #2563EB;
   text-decoration: none;
   font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.view-all-link:hover {
+  background: #EFF6FF;
+  text-decoration: underline;
 }
 
 .empty-state {

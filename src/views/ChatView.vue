@@ -1,14 +1,41 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
-import { useConversationStore } from '../stores/conversation'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { useConversationStore, type Conversation } from '../stores/conversation'
+import { useUserStore } from '../stores/user'
 
 const route = useRoute()
+const router = useRouter()
 const conversationStore = useConversationStore()
+const userStore = useUserStore()
+
+const messageError = ref(false)
 
 const conv = computed(() => {
-  const id = Number(route.params.id)
-  return conversationStore.getConversationById(id)
+  const param = (route.params.userId as string) || (route.params.id as string)
+  if (!param) return undefined as Conversation | undefined
+
+  const id = Number(param)
+  if (!Number.isNaN(id)) {
+    return conversationStore.getConversationById(id)
+  }
+
+  return conversationStore.getConversationByUser(param)
+})
+
+onMounted(() => {
+  if (!userStore.isLoggedIn) {
+    window.alert('请先登录后再发起私信')
+    router.push('/login')
+    return
+  }
+
+  const currentConv = conv.value
+  if (currentConv) {
+    conversationStore.clearUnread(currentConv.id)
+  } else {
+    messageError.value = true
+  }
 })
 
 const messages = computed(() => conv.value?.messages ?? [])
@@ -33,12 +60,6 @@ function showTimeDivider(index: number): boolean {
   if (!prev) return true
   return messages.value[index]!.time !== prev.time
 }
-
-onMounted(() => {
-  if (conv.value) {
-    conversationStore.clearUnread(conv.value.id)
-  }
-})
 </script>
 
 <template>

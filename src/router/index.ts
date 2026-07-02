@@ -170,6 +170,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/chat/:userId',
+      name: 'chatWithUser',
+      component: ChatView,
+      meta: {
+        title: '私信',
+      },
+    },
+    {
       path: '/user/favorites',
       name: 'favorites',
       component: FavoritesView,

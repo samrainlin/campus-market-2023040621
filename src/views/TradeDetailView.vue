@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getTrade, getTrades, type TradeItem } from '../api/trade'
 import { useFavoriteStore } from '../stores/favorite'
+import { useUserStore } from '../stores/user'
 
 const route = useRoute()
+const router = useRouter()
 const favoriteStore = useFavoriteStore()
+const userStore = useUserStore()
 
 const trade = ref<TradeItem | null>(null)
 const allTrades = ref<TradeItem[]>([])
@@ -50,6 +53,20 @@ const relatedTrades = computed(() => allTrades.value.slice(0, 4))
 
 function showAlert(msg: string) {
   window.alert(msg)
+}
+
+function startChatWithPublisher() {
+  if (!userStore.isLoggedIn) {
+    window.alert('请先登录后再发起私信')
+    router.push('/login')
+    return
+  }
+  const publisher = trade.value?.publisher
+  if (publisher) {
+    router.push(`/chat/${encodeURIComponent(publisher)}`)
+  } else {
+    router.push('/message')
+  }
 }
 
 onMounted(() => {
@@ -120,9 +137,9 @@ onMounted(() => {
         <div class="detail-section">
           <h3 class="detail-section-title">⚡ 快速操作</h3>
           <div class="action-row">
-            <RouterLink :to="`/message`" class="action-btn action-btn-primary">
+            <button class="action-btn action-btn-primary" @click="startChatWithPublisher">
               💬 联系发布者
-            </RouterLink>
+            </button>
             <button :class="['action-btn', 'action-btn-secondary', { active: isFavorited }]" @click="toggleFavorite">
               {{ isFavorited ? '✅ 已收藏' : '⭐ 收藏' }}
             </button>
@@ -157,9 +174,7 @@ onMounted(() => {
               <div class="author-stat-label">好评率</div>
             </div>
           </div>
-          <RouterLink to="/message" style="display:block; width: 100%; margin-top: 16px; text-decoration: none;">
-            <button class="sidebar-contact-btn">💬 发起私信</button>
-          </RouterLink>
+          <button class="sidebar-contact-btn" @click="startChatWithPublisher">💬 发起私信</button>
         </div>
 
         <div class="sidebar-card">

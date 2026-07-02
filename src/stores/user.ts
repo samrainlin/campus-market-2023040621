@@ -40,6 +40,22 @@ export const useUserStore = defineStore('user', {
     bio(state): string {
       return state.currentUser?.bio || ''
     },
+
+    email(state): string {
+      return state.currentUser?.email || ''
+    },
+
+    phone(state): string {
+      return state.currentUser?.phone || ''
+    },
+
+    wechat(state): string {
+      return state.currentUser?.wechat || ''
+    },
+
+    campus(state): string {
+      return state.currentUser?.campus || ''
+    },
   },
 
   actions: {
@@ -89,6 +105,12 @@ export const useUserStore = defineStore('user', {
       this.currentUser = null
       this.isLoggedIn = false
       localStorage.removeItem(STORAGE_KEY)
+    },
+
+    updateProfile(data: Partial<User>) {
+      if (!this.currentUser) return
+      this.currentUser = { ...this.currentUser, ...data }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.currentUser))
     },
   },
 })

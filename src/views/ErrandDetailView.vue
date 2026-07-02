@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getErrand, getErrands, type ErrandItem } from '../api/errand'
+import { useUserStore } from '../stores/user'
 
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 
 const errand = ref<ErrandItem | null>(null)
 const allErrands = ref<ErrandItem[]>([])
@@ -30,6 +33,20 @@ const relatedTasks = computed(() => allErrands.value.slice(0, 4))
 
 function showAlert(msg: string) {
   window.alert(msg)
+}
+
+function startChatWithPublisher() {
+  if (!userStore.isLoggedIn) {
+    window.alert('请先登录后再发起私信')
+    router.push('/login')
+    return
+  }
+  const publisher = errand.value?.publisher || errand.value?.contact
+  if (publisher) {
+    router.push(`/chat/${encodeURIComponent(publisher)}`)
+  } else {
+    router.push('/message')
+  }
 }
 
 onMounted(() => {
@@ -109,7 +126,7 @@ onMounted(() => {
           <h3 class="detail-section-title">⚡ 快速操作</h3>
           <div class="action-row">
             <button class="action-btn action-btn-primary" @click="showAlert('报名成功！发布者会尽快联系您确认～')">🙋 我帮你跑</button>
-            <RouterLink to="/message" class="action-btn action-btn-secondary">💬 私聊协商</RouterLink>
+            <button @click="startChatWithPublisher" class="action-btn action-btn-secondary">💬 私聊协商</button>
             <button class="action-btn action-btn-report" @click="showAlert('感谢您的举报')">🚩 举报</button>
           </div>
         </div>
@@ -130,9 +147,9 @@ onMounted(() => {
             <div><div class="author-stat-num">10</div><div class="author-stat-label">已完成</div></div>
             <div><div class="author-stat-num">100%</div><div class="author-stat-label">好评</div></div>
           </div>
-          <RouterLink to="/message" style="display:block; width: 100%; margin-top: 16px;">
-            <el-button size="large" style="width: 100%; background: #10B981; border-color: #10B981; color: white;">💬 私信TA</el-button>
-          </RouterLink>
+          <button @click="startChatWithPublisher" class="sidebar-contact-btn" style="width: 100%; margin-top: 16px; background: #10B981; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+            💬 私信TA
+          </button>
         </div>
 
         <div class="sidebar-card">

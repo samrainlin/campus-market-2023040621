@@ -39,6 +39,17 @@ function validateForm() {
   return Object.values(errors).every((message) => !message)
 }
 
+function extractErrorMessage(error: unknown): string {
+  if (!error) return '网络错误'
+  if (error instanceof Error) return error.message
+  if (typeof error === 'object') {
+    const err = error as { response?: { data?: { message?: string } }; message?: string }
+    if (err.response?.data?.message) return err.response.data.message
+    if (err.message) return err.message
+  }
+  return '网络错误，请重试'
+}
+
 async function handleLogin() {
   if (!validateForm()) {
     return
@@ -52,7 +63,7 @@ async function handleLogin() {
     router.push('/user')
   } catch (error) {
     console.error(error)
-    loginError.value = (error as Error)?.message || '登录失败，请稍后重试'
+    loginError.value = extractErrorMessage(error) || '登录失败，请稍后重试'
   } finally {
     submitting.value = false
   }

@@ -9,6 +9,7 @@ const submitting = ref(false)
 const nickname = ref('')
 const studentId = ref('')
 const college = ref('')
+const grade = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -16,7 +17,8 @@ const agree = ref(false)
 
 const errors = reactive<Record<string, string>>({})
 
-const collegeOptions = ['计算机学院', '外国语学院', '经济学院', '理学院', '文学院', '艺术学院', '体育学院', '医学院']
+const collegeOptions = ['计算机学院', '外国语学院', '经济学院', '理学院', '文学院', '艺术学院', '体育学院', '医学院', '法学院', '教育学院', '历史学院', '数学学院', '物理学院', '化学学院', '生命科学学院']
+const gradeOptions = ['2021级', '2022级', '2023级', '2024级', '2025级']
 
 function validate(): boolean {
   Object.keys(errors).forEach((k) => { errors[k] = '' })
@@ -37,6 +39,11 @@ function validate(): boolean {
 
   if (!college.value) {
     errors.college = '请选择学院'
+    valid = false
+  }
+
+  if (!grade.value) {
+    errors.grade = '请选择年级'
     valid = false
   }
 
@@ -109,7 +116,7 @@ async function handleSubmit() {
       password: password.value,
       name: nickname.value,
       college: college.value,
-      grade: '',
+      grade: grade.value,
       studentId: studentId.value,
       email: email.value,
       avatar: '',
@@ -167,10 +174,19 @@ function goToLogin() {
         </div>
       </div>
 
-      <div class="form-group">
-        <div class="form-label">邮箱</div>
-        <el-input size="large" v-model="email" placeholder="请输入学校邮箱" />
-        <p v-if="errors.email" class="error-text">{{ errors.email }}</p>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">年级</div>
+          <el-select size="large" v-model="grade" placeholder="选择年级" style="width: 100%;">
+            <el-option v-for="opt in gradeOptions" :key="opt" :label="opt" :value="opt" />
+          </el-select>
+          <p v-if="errors.grade" class="error-text">{{ errors.grade }}</p>
+        </div>
+        <div class="form-group">
+          <div class="form-label">邮箱</div>
+          <el-input size="large" v-model="email" placeholder="请输入学校邮箱" />
+          <p v-if="errors.email" class="error-text">{{ errors.email }}</p>
+        </div>
       </div>
 
       <div class="form-group">

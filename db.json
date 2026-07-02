@@ -178,6 +178,23 @@
       "status": "open",
       "description": "毕业了闲置",
       "id": 8
+    },
+    {
+      "title": "吉他",
+      "category": "other",
+      "price": 99,
+      "condition": "99",
+      "location": "寝室",
+      "publisher": "东京下小雨",
+      "publishTime": "2026-07-02 15:34",
+      "image": "https://picsum.photos/seed/trade-1783006448556/400/300",
+      "status": "open",
+      "description": "很好",
+      "originalPrice": 200,
+      "negotiateMethod": "small",
+      "transactionMethod": "face",
+      "contact": "123456",
+      "id": 9
     }
   ],
   "lostFounds": [

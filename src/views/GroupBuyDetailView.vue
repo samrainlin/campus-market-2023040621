@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getGroupBuy, getGroupBuys, type GroupBuyItem } from '../api/groupBuy'
+import { useUserStore } from '../stores/user'
 
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 
 const groupBuy = ref<GroupBuyItem | null>(null)
 const allGroupBuys = ref<GroupBuyItem[]>([])
@@ -30,6 +33,20 @@ const relatedGroupBuys = computed(() => allGroupBuys.value.slice(0, 4))
 
 function showAlert(msg: string) {
   window.alert(msg)
+}
+
+function startChatWithPublisher() {
+  if (!userStore.isLoggedIn) {
+    window.alert('请先登录后再发起私信')
+    router.push('/login')
+    return
+  }
+  const publisher = groupBuy.value?.publisher
+  if (publisher) {
+    router.push(`/chat/${encodeURIComponent(publisher)}`)
+  } else {
+    router.push('/message')
+  }
 }
 
 const progressPercent = computed(() => {
@@ -104,9 +121,9 @@ onMounted(() => {
             <button class="action-btn action-btn-primary" @click="showAlert('报名成功！请等待发布者联系您～')">
               🙋 我要拼单
             </button>
-            <RouterLink to="/message" class="action-btn action-btn-secondary">
+            <button class="action-btn action-btn-secondary" @click="startChatWithPublisher">
               💬 私聊询问
-            </RouterLink>
+            </button>
             <button class="action-btn action-btn-report" @click="showAlert('感谢您的举报')">
               🚩 举报
             </button>
@@ -129,9 +146,9 @@ onMounted(() => {
             <div><div class="author-stat-num">12</div><div class="author-stat-label">成功</div></div>
             <div><div class="author-stat-num">96%</div><div class="author-stat-label">好评</div></div>
           </div>
-          <RouterLink to="/message" style="display:block; width: 100%; margin-top: 16px;">
-            <el-button size="large" style="width: 100%; background: #F59E0B; border-color: #F59E0B; color: white;">💬 私信询问</el-button>
-          </RouterLink>
+          <button @click="startChatWithPublisher" class="sidebar-contact-btn" style="width: 100%; margin-top: 16px; background: #F59E0B; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+            💬 私信询问
+          </button>
         </div>
 
         <div class="sidebar-card">

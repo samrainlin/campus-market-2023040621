@@ -181,5 +181,33 @@ export const useConversationStore = defineStore('conversation', {
         time: '刚刚',
       })
     },
+
+    // 按用户名查找会话（用于从详情页发起私信时，查询已有或新建会话
+    getConversationByUser(name: string): Conversation {
+      const existing = this.conversations.find((c) => c.name === name)
+      if (existing) return existing
+      const newId = Math.max(...this.conversations.map(c => c.id), 0) + 1
+      const newConv: Conversation = {
+        id: newId,
+        name: name,
+        avatar: `https://picsum.photos/seed/user-${name}/100/100`,
+        time: '刚刚',
+        preview: `对方正在输入...`,
+        unread: 0,
+        tag: '💬 私信',
+        tagColor: '#2563EB',
+        tagBg: '#EFF6FF',
+        messages: [
+          {
+            id: 1,
+            role: 'other',
+            content: `你好～关于我发的信息，有什么可以帮你的吗？`,
+            time: '刚刚',
+          },
+        ],
+      }
+      this.conversations.unshift(newConv)
+      return newConv
+    },
   },
 })
