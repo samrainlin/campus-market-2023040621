@@ -47,7 +47,8 @@ export const useUserStore = defineStore('user', {
       let res
       try {
         res = await getUsers()
-      } catch (error) {
+      } catch (_error) {
+        console.error(_error);
         throw new Error('无法连接到 Mock 服务，请检查 JSON Server 是否启动')
       }
 

@@ -50,9 +50,9 @@ async function handleLogin() {
     await userStore.login(form.username, form.password)
     window.alert('登录成功')
     router.push('/user')
-  } catch (error: any) {
+  } catch (error) {
     console.error(error)
-    loginError.value = error?.message || '登录失败，请稍后重试'
+    loginError.value = (error as Error)?.message || '登录失败，请稍后重试'
   } finally {
     submitting.value = false
   }

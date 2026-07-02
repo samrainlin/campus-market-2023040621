@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { getErrands, type ErrandItem } from '../api/errand'
 import EmptyState from '../components/EmptyState.vue'
-import { useFavoriteStore, type FavoriteItem } from '../stores/favorite'
+import { useFavoriteStore } from '../stores/favorite'
 
 const favoriteStore = useFavoriteStore()
 

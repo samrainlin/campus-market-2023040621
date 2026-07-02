@@ -101,9 +101,9 @@ async function handleSubmit() {
 
     window.alert('注册成功，请前往登录')
     router.push('/login')
-  } catch (error: any) {
+  } catch (error) {
     console.error(error)
-    const message = error?.message || '网络错误'
+    const message = (error as Error)?.message || '网络错误'
     window.alert(`注册失败：${message}\n\n请确认：\n1. 已启动 Mock 服务（运行命令：npm run mock）\n2. JSON Server 运行在端口 3001\n3. db.json 文件存在且包含 users 节点`)
   } finally {
     submitting.value = false
