@@ -1,126 +1,174 @@
-Campus Market Seed
+# 校园轻集市
 
-《校园轻集市》AI 辅助前端工程实践课程种子仓库
+## 项目简介
 
-⸻
+"校园轻集市"是一个面向高校校园生活场景的 PC 端 Web App，主要支持二手交易、失物招领、拼单搭子、跑腿委托等功能。
 
-项目简介
+本项目基于 Vue 3 + Vite + TypeScript 技术栈构建，使用 JSON Server 模拟后端接口，使用 Pinia 管理前端状态，是一个完整的前端实训项目。
 
-Campus Market Seed 是《校园轻集市》课程的统一种子仓库（Seed Repository）。
+---
 
-本仓库不仅提供 Vue 3 前端项目模板，还包含课程文档、开发规范、AI 协作规范、过程性证据模板以及自动检测框架，为整个实训提供统一的开发基础。
+## 技术栈
 
-本仓库是所有同学开展项目实践的起点。
+- **Vue 3** - 渐进式 JavaScript 框架，使用 Composition API 组织代码
+- **Vite** - 下一代前端构建工具，提供快速的热更新体验
+- **TypeScript** - 类型安全的 JavaScript 超集，提升代码可维护性
+- **Vue Router** - Vue.js 官方路由管理器，实现多页面导航
+- **Pinia** - Vue 官方状态管理库，管理用户状态和收藏状态
+- **Axios** - 基于 Promise 的 HTTP 客户端，用于请求 Mock 数据接口
+- **JSON Server** - 零配置的 REST API Mock 服务器，提供后端数据模拟
+- **Element Plus** - 基于 Vue 3 的组件库，提供统一的 UI 风格
 
-⸻
+---
 
-项目目标
+## 核心功能
 
-通过本课程，你将完成一个基于 Vue 3 的校园轻集市前端项目，并体验真实的软件工程开发流程。
+- **首页与导航** - 项目入口页，展示各模块入口和导航菜单
+- **二手交易** - 浏览、搜索校园二手商品信息
+- **失物招领** - 发布和查看遗失物品与拾获物品
+- **拼单搭子** - 寻找一起拼单、一起吃饭的小伙伴
+- **跑腿委托** - 发布和接受各种校园跑腿任务
+- **信息发布** - 登录用户可以在各模块发布新的信息
+- **用户中心** - 展示用户资料、我的收藏、发布历史
+- **收藏功能** - 对感兴趣的信息进行收藏管理
+- **搜索与筛选** - 支持关键词搜索和分类筛选
+- **状态提示** - 包含加载状态、空状态和错误状态的友好提示
 
-课程重点包括：
+---
 
-* Vue 3 工程化开发
-* Git 版本管理
-* AI Coding 协作开发
-* 软件工程规范
-* 过程性证据管理
-* 项目验收与自动检测
+## 项目运行
 
-⸻
+### 1. 安装依赖
 
-快速开始
+```bash
+npm install
+```
 
-首次使用本仓库，请按照以下顺序阅读文档：
+### 2. 启动 Mock 服务
 
-README.md
-    │
-    ▼
-docs/guide/Environment_Setup.md
-    │
-    ▼
-docs/guide/Getting_Started.md
+```bash
+npm run mock
+```
 
-随后执行：
+Mock 服务默认运行在 http://localhost:3001
 
-git clone <课程仓库地址>
-cd campus-market-seed
-nvm use
-pnpm install
-pnpm dev
+### 3. 启动前端项目
 
-浏览器访问：
+```bash
+npm run dev
+```
 
-http://localhost:5173
+前端服务默认运行在 http://localhost:5173
 
-如果页面显示：
+### 4. 构建项目
 
-项目启动成功
+```bash
+npm run build
+```
 
-说明开发环境已经配置完成。
+构建产物输出到 `dist` 目录。
 
-⸻
+---
 
-项目结构
+## 项目目录说明
 
-campus-market-seed
-├── docs
-│   ├── ai              # AI 协作规范
-│   ├── evidence        # 每日过程证据
-│   └── guide           # 学生使用指南
-├── scripts             # 自动检测工具
-├── src                 # 项目源码
-└── CHECK_REPORT.md     # 自动检测报告（后续版本启用）
+```
+campus-market-seed/
+├── src/
+│   ├── api/                 # 接口请求模块
+│   │   ├── http.ts          # Axios 实例封装
+│   │   ├── trade.ts         # 二手交易接口
+│   │   ├── lostFound.ts     # 失物招领接口
+│   │   ├── groupBuy.ts      # 拼单搭子接口
+│   │   ├── errand.ts        # 跑腿委托接口
+│   │   └── user.ts          # 用户相关接口
+│   ├── components/          # 公共组件
+│   │   ├── AppHeader.vue    # 页面顶部导航
+│   │   ├── AppLayout.vue    # 统一页面布局
+│   │   ├── AppNav.vue       # 导航栏组件
+│   │   ├── ItemCard.vue     # 信息卡片组件
+│   │   ├── EmptyState.vue   # 空状态提示组件
+│   │   ├── LoadingState.vue # 加载状态提示组件
+│   │   ├── ErrorState.vue   # 错误状态提示组件
+│   │   ├── SearchBar.vue    # 搜索栏组件
+│   │   └── FormField.vue    # 表单字段组件
+│   ├── router/              # 路由配置
+│   │   └── index.ts         # 路由定义
+│   ├── stores/              # Pinia 状态管理
+│   │   ├── user.ts          # 用户状态 store
+│   │   └── favorite.ts      # 收藏状态 store
+│   ├── views/               # 页面组件
+│   │   ├── HomeView.vue     # 首页
+│   │   ├── TradeView.vue    # 二手交易页
+│   │   ├── LostFoundView.vue # 失物招领页
+│   │   ├── GroupBuyView.vue # 拼单搭子页
+│   │   ├── ErrandView.vue   # 跑腿委托页
+│   │   ├── PublishView.vue  # 信息发布页
+│   │   ├── MessageView.vue  # 消息通知页
+│   │   ├── UserCenterView.vue # 用户中心页
+│   │   ├── LoginView.vue    # 登录页
+│   │   └── RegisterView.vue # 注册页
+│   ├── App.vue              # 根组件
+│   └── main.ts              # 应用入口
+├── docs/
+│   └── evidence/            # 每日过程性证据卡
+│       ├── Day1_Evidence.md
+│       ├── Day2_Evidence.md
+│       ├── Day3_Evidence.md
+│       ├── Day4_Evidence.md
+│       ├── Day5_Evidence.md
+│       ├── Day6_Evidence.md
+│       └── Day7_Evidence.md
+├── db.json                  # Mock 数据文件
+├── check.js                 # 项目本地检测脚本
+├── CHECK_REPORT.md          # 项目检测报告
+├── package.json
+└── README.md
+```
 
-⸻
+---
 
-文档导航
+## 测试账号
 
-文档	说明
-docs/guide/Environment_Setup.md	配置课程开发环境
-docs/guide/Getting_Started.md	Day1 快速开始指南
-docs/ai/AI_Collaboration_Card.md	AI 协作记录规范
-docs/evidence/	每日过程性证据模板
+| 用户名 | 密码 |
+|---|---|
+| student | 123456 |
 
-⸻
+也可以通过注册页创建新账号。
 
-技术栈
+---
 
-* Vue 3
-* TypeScript
-* Vite
-* Vue Router
-* Pinia
-* ESLint
-* Oxlint
+## 功能说明
 
-⸻
+### 二手交易
 
-开发规范
+浏览校园内的二手商品，支持搜索和收藏功能。用户登录后可以发布自己的闲置物品。
 
-在整个实训过程中，请遵循以下要求：
+### 失物招领
 
-* 使用 Git 管理项目开发过程；
-* 每完成一个独立功能及时提交 Commit；
-* 合理使用 AI Coding 工具辅助开发；
-* 保留 AI 协作记录；
-* 每天完成对应的 Evidence；
-* 保持项目始终能够正常运行。
+发布遗失物品信息和拾获物品信息，帮助同学找回丢失的物品。
 
-⸻
+### 拼单搭子
 
-后续版本
+寻找一起拼单购物、拼外卖、拼车的小伙伴，支持状态展示。
 
-后续版本将逐步提供：
+### 跑腿委托
 
-* 自动检测工具（Check Engine）
-* 自动评分报告
-* Git 提交分析
-* AI 协作分析
-* 教师验收工具
+发布和接受各种校园跑腿任务，如取快递、排队、打印等。
 
-⸻
+### 用户中心
 
-License
+展示个人资料、管理收藏的信息、查看历史发布。
 
-本仓库仅用于《校园轻集市》课程教学与实践。
+---
+
+## 开发说明
+
+本项目基于以下技术选择：
+
+1. **前端语言**：TypeScript，确保类型安全
+2. **状态管理**：Pinia，管理用户登录状态和收藏状态
+3. **数据来源**：JSON Server，提供 RESTful Mock 接口
+4. **页面路由**：Vue Router，管理多页面导航
+5. **HTTP 请求**：Axios，封装统一的请求方法
+
