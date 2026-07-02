@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
 import TradeView from '../views/TradeView.vue'
 import LostFoundView from '../views/LostFoundView.vue'
 import GroupBuyView from '../views/GroupBuyView.vue'
@@ -18,6 +20,22 @@ const router = createRouter({
       component: HomeView,
       meta: {
         title: '首页',
+      },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: {
+        title: '登录',
+      },
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+      meta: {
+        title: '注册',
       },
     },
     {

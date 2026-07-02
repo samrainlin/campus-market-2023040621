@@ -2,28 +2,50 @@
 import { ref, computed, onMounted } from 'vue'
 import { getTrades, type TradeItem } from '../api/trade'
 import EmptyState from '../components/EmptyState.vue'
-import { useFavoriteStore, type FavoriteItem } from '../stores/favorite'
+import LoadingState from '../components/LoadingState.vue'
+import ErrorState from '../components/ErrorState.vue'
+import SearchBar from '../components/SearchBar.vue'
+import { useFavoriteStore } from '../stores/favorite'
 
 const favoriteStore = useFavoriteStore()
 
 const keyword = ref('')
+const trades = ref<TradeItem[]>([])
+const loading = ref(false)
+const error = ref(false)
 const currentPage = ref(1)
 const pageSize = 6
-const trades = ref<TradeItem[]>([])
 
-onMounted(async () => {
-  const res = await getTrades()
-  trades.value = res.data
+async function loadTrades() {
+  loading.value = true
+  error.value = false
+
+  try {
+    const res = await getTrades()
+    trades.value = res.data
+  } catch (err) {
+    console.error(err)
+    error.value = true
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadTrades()
 })
 
 const filteredList = computed(() => {
   if (!keyword.value.trim()) return trades.value
   const kw = keyword.value.trim().toLowerCase()
-  return trades.value.filter(
-    (item) =>
+  return trades.value.filter((item) => {
+    return (
       item.title.toLowerCase().includes(kw) ||
-      item.publisher.toLowerCase().includes(kw),
-  )
+      (item.category && item.category.toLowerCase().includes(kw)) ||
+      (item.location && item.location.toLowerCase().includes(kw)) ||
+      (item.description && item.description.toLowerCase().includes(kw))
+    )
+  })
 })
 
 const totalCount = computed(() => filteredList.value.length)
@@ -57,18 +79,22 @@ const handlePageChange = (page: number) => {
       </router-link>
     </div>
 
-    <div class="search-bar">
-      <div class="search-input">
-        <span class="search-icon">🔍</span>
-        <input v-model="keyword" type="text" placeholder="搜索商品名称、发布者..." />
-        <button v-if="keyword" type="button" class="clear-btn" @click="keyword = ''">×</button>
-      </div>
-      <div class="search-stats">
-        共 <span class="stats-num">{{ totalCount }}</span> 条商品
-      </div>
-    </div>
+    <SearchBar
+      v-model="keyword"
+      placeholder="搜索商品标题、分类、地点或描述"
+      :stats-text="`共 ${totalCount} 条商品`"
+    />
 
-    <EmptyState v-if="filteredList.length === 0" text="暂无二手交易信息" />
+    <LoadingState v-if="loading" text="正在加载二手交易信息..." />
+
+    <ErrorState
+      v-else-if="error"
+      message="二手交易数据加载失败，请检查 Mock 服务是否正常运行。"
+      show-retry
+      @retry="loadTrades"
+    />
+
+    <EmptyState v-else-if="filteredList.length === 0" text="暂无符合条件的二手交易信息" />
 
     <div v-else class="card-grid">
       <div v-for="item in filteredList" :key="item.id" class="list-card">
@@ -97,6 +123,7 @@ const handlePageChange = (page: number) => {
                 })
               "
             >
+              <span class="heart-icon">{{ item.id && favoriteStore.isFavorite('trade', item.id) ? '♥' : '♡' }}</span>
               {{ item.id && favoriteStore.isFavorite('trade', item.id) ? '已收藏' : '收藏' }}
             </button>
           </div>
@@ -424,6 +451,9 @@ const handlePageChange = (page: number) => {
 }
 
 .favorite-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 6px 14px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
@@ -443,6 +473,12 @@ const handlePageChange = (page: number) => {
   background: #409eff;
   color: #ffffff;
   border-color: #409eff;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+.heart-icon {
+  font-size: 14px;
+  line-height: 1;
 }
 
 @media (max-width: 500px) {

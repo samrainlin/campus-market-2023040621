@@ -1,4 +1,36 @@
 {
+  "users": [
+    {
+      "id": 1,
+      "username": "student",
+      "password": "123456",
+      "name": "校园用户",
+      "college": "计算机学院",
+      "grade": "2023级",
+      "avatar": "",
+      "bio": "热爱校园生活，喜欢分享闲置好物。"
+    },
+    {
+      "password": "123456",
+      "name": "????",
+      "avatar": "",
+      "bio": "????",
+      "username": "testuser",
+      "college": "????",
+      "grade": "2024?",
+      "id": 2
+    },
+    {
+      "username": "小小张",
+      "password": "zjh0720",
+      "name": "林心雨",
+      "college": "计算机科学学院",
+      "grade": "2024级",
+      "avatar": "",
+      "bio": "新用户注册，欢迎来到校园轻集市。",
+      "id": 3
+    }
+  ],
   "trades": [
     {
       "id": 1,
@@ -71,6 +103,19 @@
       "location": "西区6号楼",
       "image": "https://picsum.photos/seed/trade6/400/300",
       "status": "closed"
+    },
+    {
+      "title": "吉他",
+      "category": "音乐设备",
+      "price": 199,
+      "condition": "九成新",
+      "location": "东苑十一",
+      "publisher": "林心雨",
+      "publishTime": "2026-07-02 03:54",
+      "image": "https://picsum.photos/seed/trade-1782964462925/400/300",
+      "status": "open",
+      "description": "99新",
+      "id": 7
     }
   ],
   "lostFounds": [

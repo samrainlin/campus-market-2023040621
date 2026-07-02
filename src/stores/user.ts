@@ -1,49 +1,89 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { getUsers, type User } from '../api/user'
 
-export const useUserStore = defineStore('user', () => {
-  const username = ref('校园用户')
-  const college = ref('计算机学院')
-  const grade = ref('大二')
-  const avatar = ref('https://picsum.photos/seed/campus-user/80/80')
-  const isLoggedIn = ref(true)
+const STORAGE_KEY = 'campus-market-current-user'
 
-  const displayName = computed(() => username.value)
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    isLoggedIn: false,
+    currentUser: null as User | null,
+  }),
 
-  const profileText = computed(() => {
-    return `${college.value} · ${grade.value}`
-  })
+  getters: {
+    displayName(state): string {
+      return state.currentUser?.name || '未登录'
+    },
 
-  function setUser(user: {
-    username: string
-    college?: string
-    grade?: string
-    avatar?: string
-  }) {
-    username.value = user.username
-    if (user.college !== undefined) college.value = user.college
-    if (user.grade !== undefined) grade.value = user.grade
-    if (user.avatar !== undefined) avatar.value = user.avatar
-    isLoggedIn.value = true
-  }
+    profileText(state): string {
+      if (!state.currentUser) {
+        return '请先登录'
+      }
+      return `${state.currentUser.college} · ${state.currentUser.grade}`
+    },
 
-  function logout() {
-    username.value = '校园用户'
-    college.value = '计算机学院'
-    grade.value = '大二'
-    avatar.value = 'https://picsum.photos/seed/campus-user/80/80'
-    isLoggedIn.value = false
-  }
+    username(state): string {
+      return state.currentUser?.username || ''
+    },
 
-  return {
-    username,
-    college,
-    grade,
-    avatar,
-    isLoggedIn,
-    displayName,
-    profileText,
-    setUser,
-    logout,
-  }
+    avatar(state): string {
+      return state.currentUser?.avatar || ''
+    },
+
+    college(state): string {
+      return state.currentUser?.college || ''
+    },
+
+    grade(state): string {
+      return state.currentUser?.grade || ''
+    },
+
+    bio(state): string {
+      return state.currentUser?.bio || ''
+    },
+  },
+
+  actions: {
+    async login(username: string, password: string) {
+      let res
+      try {
+        res = await getUsers()
+      } catch (error) {
+        throw new Error('无法连接到 Mock 服务，请检查 JSON Server 是否启动')
+      }
+
+      const user = res.data.find((item) => {
+        return item.username === username && item.password === password
+      })
+
+      if (!user) {
+        throw new Error('账号或密码错误')
+      }
+
+      this.currentUser = user
+      this.isLoggedIn = true
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
+    },
+
+    restoreLogin() {
+      const raw = localStorage.getItem(STORAGE_KEY)
+
+      if (!raw) {
+        return
+      }
+
+      try {
+        this.currentUser = JSON.parse(raw)
+        this.isLoggedIn = true
+      } catch (error) {
+        console.error(error)
+        localStorage.removeItem(STORAGE_KEY)
+      }
+    },
+
+    logout() {
+      this.currentUser = null
+      this.isLoggedIn = false
+      localStorage.removeItem(STORAGE_KEY)
+    },
+  },
 })

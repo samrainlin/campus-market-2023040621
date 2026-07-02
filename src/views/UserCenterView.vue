@@ -131,69 +131,77 @@ onMounted(() => {
 
 <template>
   <section class="page">
-    <div class="profile-card">
-      <img :src="userStore.avatar" class="avatar" :alt="userStore.displayName" />
-
-      <div class="profile-info">
-        <h1 class="display-name">{{ userStore.displayName }}</h1>
-        <p class="profile-text">{{ userStore.profileText }}</p>
-        <p class="bio">欢迎来到个人中心，在这里查看和管理您的收藏与发布信息。</p>
-      </div>
+    <div v-if="!userStore.isLoggedIn" class="not-logged-in panel">
+      <h1>请先登录</h1>
+      <p>登录后可以查看个人资料、我的收藏和我的发布。</p>
+      <RouterLink class="login-link" to="/login">去登录</RouterLink>
     </div>
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2>我的收藏</h2>
-        <span class="count-badge">共 {{ favoriteStore.favorites.length }} 条</span>
+    <template v-else>
+      <div class="profile-card">
+        <img :src="userStore.avatar" class="avatar" :alt="userStore.displayName" />
+
+        <div class="profile-info">
+          <h1 class="display-name">{{ userStore.displayName }}</h1>
+          <p class="profile-text">{{ userStore.profileText }}</p>
+          <p class="bio">{{ userStore.currentUser?.bio || '欢迎来到个人中心，在这里查看和管理您的收藏与发布信息。' }}</p>
+        </div>
       </div>
 
-      <EmptyState v-if="favoriteStore.favorites.length === 0" text="暂无收藏内容，可在各业务页面收藏感兴趣的信息" />
+      <div class="panel">
+        <div class="panel-header">
+          <h2>我的收藏</h2>
+          <span class="count-badge">共 {{ favoriteStore.favorites.length }} 条</span>
+        </div>
 
-      <div v-else class="item-list">
-        <ItemCard
-          v-for="item in favoriteStore.favorites"
-          :key="`${item.type}-${item.id}`"
-          :title="item.title"
-          :description="item.description"
-          :tag="typeLabelMap[item.type] || item.type"
-          :location="item.location"
-        >
-          <template #footer>
-            <button class="remove-btn" @click="favoriteStore.removeFavorite(item.type, item.id)">
-              取消收藏
-            </button>
-          </template>
-        </ItemCard>
-      </div>
-    </div>
+        <EmptyState v-if="favoriteStore.favorites.length === 0" text="暂无收藏内容，可在各业务页面收藏感兴趣的信息" />
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2>我的发布</h2>
-        <span class="count-badge">共 {{ myPublished.length }} 条</span>
-      </div>
-
-      <EmptyState v-if="!loading && myPublished.length === 0" text="您还没有发布任何信息，快去发布吧" />
-
-      <div v-else-if="myPublished.length > 0" class="item-list">
-        <ItemCard
-          v-for="item in myPublished"
-          :key="`${item.type}-${item.id}`"
-          :title="item.title"
-          :description="item.description"
-          :tag="item.typeLabel"
-          :location="item.location"
-        >
-          <template #footer>
-            <span class="status-text">状态：{{ item.status }}</span>
-          </template>
-        </ItemCard>
+        <div v-else class="item-list">
+          <ItemCard
+            v-for="item in favoriteStore.favorites"
+            :key="`${item.type}-${item.id}`"
+            :title="item.title"
+            :description="item.description"
+            :tag="typeLabelMap[item.type] || item.type"
+            :location="item.location"
+          >
+            <template #footer>
+              <button class="remove-btn" @click="favoriteStore.removeFavorite(item.type, item.id)">
+                取消收藏
+              </button>
+            </template>
+          </ItemCard>
+        </div>
       </div>
 
-      <p class="hint">
-        提示：个人中心展示所有类型中发布者字段为「{{ userStore.displayName }}」的数据。
-      </p>
-    </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>我的发布</h2>
+          <span class="count-badge">共 {{ myPublished.length }} 条</span>
+        </div>
+
+        <EmptyState v-if="!loading && myPublished.length === 0" text="您还没有发布任何信息，快去发布吧" />
+
+        <div v-else-if="myPublished.length > 0" class="item-list">
+          <ItemCard
+            v-for="item in myPublished"
+            :key="`${item.type}-${item.id}`"
+            :title="item.title"
+            :description="item.description"
+            :tag="item.typeLabel"
+            :location="item.location"
+          >
+            <template #footer>
+              <span class="status-text">状态：{{ item.status }}</span>
+            </template>
+          </ItemCard>
+        </div>
+
+        <p class="hint">
+          提示：个人中心展示所有类型中发布者字段为「{{ userStore.displayName }}」的数据。
+        </p>
+      </div>
+    </template>
   </section>
 </template>
 
@@ -202,6 +210,37 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.not-logged-in {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.not-logged-in h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  color: #1f2937;
+}
+
+.not-logged-in p {
+  margin: 0 0 20px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.login-link {
+  display: inline-block;
+  padding: 10px 28px;
+  background: #2563eb;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.login-link:hover {
+  background: #1d4ed8;
 }
 
 .profile-card,
