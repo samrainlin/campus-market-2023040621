@@ -16,6 +16,74 @@
 - 二手交易页 TradeView.vue 加了加载、错误、搜索功能
 - 收藏按钮样式优化，已收藏时变颜色和未收藏不一样
 
+---
+
+## 1.1 证据材料检查（Day6 阶段）
+
+> 在 Day7 综合验收时回头检查 Day6 的证据材料。
+
+**代码层面的检查：**
+
+| 检查项 | 预期 | 实际结果 |
+|-------|------|---------|
+| db.json 包含 users 数据 | db.json 中应有 users 数组 | ✅ 存在，包含测试账号 student/123456 |
+| 用户 API 模块存在 | src/api/user.ts 应有 User interface 和 getUsers/createUser 方法 | ✅ 存在，类型定义和方法都完整 |
+| 注册页（RegisterView.vue）存在 | src/views/RegisterView.vue 应有完整注册表单 | ✅ 存在，含表单校验 |
+| 登录页（LoginView.vue）存在 | src/views/LoginView.vue 应有登录表单 | ✅ 存在，含状态持久化 |
+| router 中包含 /login 和 /register | src/router/index.ts 中应有两条路由 | ✅ 存在 |
+| userStore 有 login/logout/restoreLogin 方法 | src/stores/user.ts 中应包含这些方法 | ✅ 实现，包含 localStorage 持久化 |
+| LoadingState 组件存在 | src/components/LoadingState.vue | ✅ 存在，显示加载动画 |
+| ErrorState 组件存在 | src/components/ErrorState.vue | ✅ 存在，含错误消息和重试按钮 |
+| SearchBar 组件存在 | src/components/SearchBar.vue | ✅ 存在，支持关键词输入和清空 |
+| TradeView 有搜索功能 | TradeView.vue 应基于 keyword computed 过滤列表 | ✅ 实现，搜索标题、分类、地点、描述 |
+| 收藏按钮样式区分 | active 状态和未激活状态应有不同样式 | ✅ 有颜色和图标区分 |
+| PublishView 有登录拦截 | 未登录时应提示并跳转到登录页 | ✅ 实现 |
+| UserCenter 未登录有提示 | 未登录时应显示登录引导卡片 | ✅ 实现 |
+| 导航栏显示登录状态 | AppHeader 应根据 userStore.isLoggedIn 显示不同内容 | ✅ 实现，显示用户名+退出 or 登录+注册 |
+| `npm run build` 构建通过 | 执行构建命令无 TypeScript 错误 | ✅ 构建成功 |
+
+**文档层面的检查：**
+
+| 检查项 | 预期 | 实际结果 |
+|-------|------|---------|
+| Day6_Evidence.md 存在 | docs/evidence/Day6_Evidence.md | ✅ 存在 |
+| AI_Collaboration_Card.md 更新 | docs/ai/AI_Collaboration_Card.md 有 Day6 的 AI 协作记录 | ✅ 有记录 |
+| 完整功能走查记录 | Day6_Evidence.md 应包含测试步骤和结果 | ✅ 已记录 18 步完整走查 |
+
+---
+
+## 1.2 阶段性功能清单（Day6 阶段）
+
+> Day6 阶段的核心任务是"注册登录、状态持久化与交互优化"。
+
+| 功能模块 | 完成情况 | 说明 |
+|---------|---------|------|
+| db.json 用户数据（users） | ✅ | 包含 id、username、password、name、college、grade、avatar、bio、publishTime |
+| 用户 API（user.ts） | ✅ | User interface + getUsers() + createUser() |
+| 注册页（RegisterView.vue） | ✅ | 表单校验（用户名≥3、密码≥6、两次密码一致）、用户名查重、POST 写入 db.json、注册成功跳转登录页 |
+| 登录页（LoginView.vue） | ✅ | 账号密码校验（前端遍历 users 数组匹配）、匹配成功写入 Pinia + localStorage、跳转个人中心 |
+| 登录状态持久化 | ✅ | localStorage 保存用户对象、App.vue 的 onMounted 中 restoreLogin 恢复 |
+| 退出登录功能 | ✅ | 调用 userStore.logout()，清除 Pinia 状态和 localStorage，跳回首页 |
+| 导航栏登录态切换 | ✅ | 未登录显示"登录/注册"，已登录显示"用户名/退出" |
+| 发布页登录拦截 | ✅ | 未登录时 alert 提示并 router.push('/login') |
+| 个人中心未登录提示 | ✅ | 显示登录引导卡片，按钮跳转到登录页 |
+| LoadingState 组件 | ✅ | 请求数据时显示加载动画和文案 |
+| ErrorState 组件 | ✅ | 请求失败时显示错误图标、错误消息、重新加载按钮 |
+| SearchBar 组件 | ✅ | 输入关键词 v-model，搜索按钮和清空按钮，显示搜索结果数量 |
+| 二手交易搜索功能 | ✅ | computed 过滤，匹配 title、category、location、description |
+| 收藏按钮样式优化 | ✅ | active 状态使用不同颜色、加阴影、心形图标切换 |
+| 注册/登录错误提示优化 | ✅ | 区分网络错误和账号密码错误，给出明确文案 |
+| 项目构建验证（npm run build） | ✅ | TypeScript 检查通过，Vite 构建成功 |
+
+**Day6 阶段没有实现的功能：**
+- 没有实现 JWT 认证（只使用 localStorage 前端持久化，模拟登录场景）
+- 没有实现路由守卫全局拦截（只在发布页和个人中心做简单条件判断）
+- 没有实现找回密码功能
+- 没有实现详情页（/trade/:id 等路由不存在）
+- 没有实现分页功能
+
+---
+
 ## 2. 注册登录设计说明
 
 注册流程大概是这样的：

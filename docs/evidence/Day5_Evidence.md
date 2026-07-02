@@ -38,6 +38,61 @@
 
 我理解的"边界原则"是：多个组件/页面都要用的数据才放 Store，单页面用的就放组件内部。
 
+---
+
+## 3.1 证据材料检查（Day5 阶段）
+
+> 在 Day7 综合验收时回头检查 Day5 的证据材料。
+
+**代码层面的检查：**
+
+| 检查项 | 预期 | 实际结果 |
+|-------|------|---------|
+| user store 存在 | src/stores/user.ts 应有 defineStore | ✅ 存在，管理 username、college、grade 等状态 |
+| favorite store 存在 | src/stores/favorite.ts 应有 defineStore | ✅ 存在，管理 favorites 数组和 addFavorite/removeFavorite 方法 |
+| 个人中心页面使用 Store | UserCenterView.vue 应从 userStore 和 favoriteStore 读取数据 | ✅ 使用了 userStore 展示用户资料，favoriteStore 展示收藏列表 |
+| 列表页有收藏按钮 | TradeView、LostFoundView、GroupBuyView、ErrandView 应有关注/收藏按钮 | ✅ 四个页面都有收藏按钮，调用 favoriteStore.toggleFavorite |
+| 发布页 publisher 取 userStore | PublishView.vue 的 publisher 字段应从 userStore.displayName 取值 | ✅ publisher 使用 userStore.displayName |
+| `npm run build` 构建通过 | 执行构建命令无 TypeScript 错误 | ✅ 构建成功 |
+
+**文档层面的检查：**
+
+| 检查项 | 预期 | 实际结果 |
+|-------|------|---------|
+| Day5_Evidence.md 存在 | docs/evidence/Day5_Evidence.md | ✅ 存在 |
+| AI_Collaboration_Card.md 更新 | docs/ai/AI_Collaboration_Card.md 有 Day5 的 AI 协作记录 | ✅ 有记录 |
+
+---
+
+## 3.2 阶段性功能清单（Day5 阶段）
+
+> Day5 阶段的核心任务是"Pinia 状态管理与用户中心"。
+
+| 功能模块 | 完成情况 | 说明 |
+|---------|---------|------|
+| user store（src/stores/user.ts） | ✅ | 使用 Composition API 写法，管理 username、college、grade、avatar 等 |
+| favorite store（src/stores/favorite.ts） | ✅ | 管理 favorites 数组，提供 addFavorite/removeFavorite/toggleFavorite/isFavorite 方法 |
+| FavoriteItem 类型定义 | ✅ | 包含 id、type、title、description、location 字段 |
+| 顶部导航显示用户信息 | ✅ | AppHeader.vue 从 userStore 读取用户名和头像 |
+| 二手交易页收藏按钮 | ✅ | 点击后调用 favoriteStore.toggleFavorite，按钮文案随状态变化 |
+| 失物招领页收藏按钮 | ✅ | 与二手交易页逻辑一致，type 传 'lostFound' |
+| 拼单搭子页收藏按钮 | ✅ | type 传 'groupBuy' |
+| 跑腿委托页收藏按钮 | ✅ | type 传 'errand' |
+| 个人中心用户资料展示 | ✅ | 从 userStore 读取用户名、学院、年级、头像 |
+| 个人中心收藏列表展示 | ✅ | 从 favoriteStore.favorites 循环渲染 |
+| 个人中心取消收藏 | ✅ | 点击"取消收藏"调用 favoriteStore.removeFavorite |
+| 发布页 publisher 字段 | ✅ | 从 userStore.displayName 取值，不再使用固定字符串 |
+| 项目构建验证（npm run build） | ✅ | TypeScript 检查通过，Vite 构建成功 |
+
+**Day5 阶段没有实现的功能：**
+- 没有实现用户注册/登录功能（Day6 才做）
+- 没有实现登录状态持久化（刷新页面收藏状态会丢失）
+- 没有实现搜索功能
+- 没有实现 loading/error 状态组件
+- 没有实现详情页
+
+---
+
 ## 4. 页面使用记录
 
 Store 在以下地方被用到：

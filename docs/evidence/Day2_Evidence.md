@@ -94,6 +94,59 @@
 - 原因：提示词未明确限制 Day2 范围
 - 解决：仅保留页面组件、路由、布局相关代码；删除鉴权/API/引入第三方 UI 框架相关代码；不提前设计复杂权限系统。
 
+## 4.1 证据材料检查（Day2 阶段）
+
+> 在 Day7 综合验收时回头检查 Day2 的证据材料。
+
+**代码层面的检查：**
+
+| 检查项 | 预期 | 实际结果 |
+|-------|------|---------|
+| 8 个页面 View 文件存在 | src/views/ 下应有 HomeView、TradeView、LostFoundView、GroupBuyView、ErrandView、PublishView、MessageView、UserCenterView | ✅ 全部存在 |
+| 路由配置完整 | src/router/index.ts 中应有 8 个路由，路径与页面清单一致 | ✅ /、/trade、/lost-found、/group-buy、/errand、/publish、/message、/user 全部存在 |
+| 公共布局组件存在 | src/components/ 下应有 AppLayout、AppHeader、AppNav | ✅ 全部存在 |
+| router-link 使用正确 | 导航栏应使用 `<router-link>` 而非 `<a>` 标签 | ✅ 导航组件使用了 router-link |
+| App.vue 挂载 Router | App.vue 中应包含 router-view | ✅ App.vue 引用了 AppLayout，包含路由展示 |
+| main.ts 挂载 Pinia | main.ts 中应有 `app.use(createPinia())` 和 `app.use(router)` | ✅ 已添加 |
+| `npm run build` 构建通过 | 执行构建命令无 TypeScript 错误 | ✅ 构建成功 |
+
+**文档层面的检查：**
+
+| 检查项 | 预期 | 实际结果 |
+|-------|------|---------|
+| Day2_Evidence.md 存在 | docs/evidence/Day2_Evidence.md | ✅ 存在 |
+| AI_Collaboration_Card.md 更新 | docs/ai/AI_Collaboration_Card.md 有 Day2 的 AI 协作记录 | ✅ 有记录 |
+
+---
+
+## 4.2 阶段性功能清单（Day2 阶段）
+
+> Day2 阶段的核心任务是"页面骨架与路由导航"。
+
+| 功能模块 | 完成情况 | 说明 |
+|---------|---------|------|
+| 首页骨架（HomeView.vue） | ✅ | 包含项目标题和功能入口 |
+| 二手交易页骨架（TradeView.vue） | ✅ | 基础页面结构，后续 Day3 添加数据 |
+| 失物招领页骨架（LostFoundView.vue） | ✅ | 基础页面结构 |
+| 拼单搭子页骨架（GroupBuyView.vue） | ✅ | 基础页面结构 |
+| 跑腿委托页骨架（ErrandView.vue） | ✅ | 基础页面结构 |
+| 发布信息页骨架（PublishView.vue） | ✅ | 基础表单结构占位 |
+| 消息中心页骨架（MessageView.vue） | ✅ | 基础消息展示结构 |
+| 个人中心页骨架（UserCenterView.vue） | ✅ | 基础用户资料展示结构 |
+| 公共布局组件（AppLayout） | ✅ | 统一的页面容器，包含头部导航和内容区 |
+| 顶部导航组件（AppHeader） | ✅ | 8 个页面的导航链接，路由高亮正常 |
+| 分类导航组件（AppNav） | ✅ | 页面内分页/分类导航辅助 |
+| 路由配置（router/index.ts） | ✅ | 8 个路由映射正确，路径与页面清单一致 |
+| 项目构建验证（npm run build） | ✅ | TypeScript 检查通过，Vite 构建成功 |
+
+**Day2 阶段没有实现的功能：**
+- 没有实现任何数据请求（db.json 和 Axios 封装等到 Day3 才做）
+- 没有实现表单提交功能（Day4 才做）
+- 没有实现用户登录和状态管理（Day5、Day6 才做）
+- 样式使用原生 CSS（不引入第三方 UI 框架）
+
+---
+
 ## 5. 今日反思
 
 Day2 的核心任务是搭建项目骨架，虽然看起来只是"搭架子"，但对后续业务开发的影响非常深远。**页面骨架**为后续每个业务页面提供了统一的入口文件命名和组件结构，后续无论是扩展发布页、详情页、订单页都可以按照同样的模式快速扩展。**路由导航**是单页应用的骨架通道，统一使用 Vue Router 的 createWebHistory 模式和 router-link 组件，保证了用户在页面间的切换不需要重新加载页面，提升了用户体验。同时在路由守卫中增加 meta.title 动态设置页面标题，可以让用户在浏览器标签页一眼看到当前所在位置，这是小但实用的用户体验细节。
