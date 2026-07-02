@@ -29,6 +29,29 @@
       "avatar": "",
       "bio": "新用户注册，欢迎来到校园轻集市。",
       "id": 3
+    },
+    {
+      "username": "小小乔",
+      "password": "zjh0720",
+      "name": "kdcd",
+      "college": "计算机科学学院",
+      "grade": "2024级",
+      "avatar": "",
+      "bio": "新用户注册，欢迎来到校园轻集市。",
+      "id": 4
+    },
+    {
+      "username": "东京下小雨",
+      "password": "zjh0720",
+      "name": "东京下小雨",
+      "college": "计算机学院",
+      "grade": "",
+      "studentId": "2023040621",
+      "email": "2810224868@qq.com",
+      "avatar": "",
+      "bio": "新用户注册，欢迎来到校园轻集市。",
+      "notify": true,
+      "id": 5
     }
   ],
   "trades": [
@@ -116,6 +139,19 @@
       "status": "open",
       "description": "99新",
       "id": 7
+    },
+    {
+      "title": "吉他",
+      "category": "音乐设备",
+      "price": 199,
+      "condition": "九成新",
+      "location": "东十三",
+      "publisher": "kdcd",
+      "publishTime": "2026-07-02 07:45",
+      "image": "https://picsum.photos/seed/trade-1782978344400/400/300",
+      "status": "open",
+      "description": "毕业了闲置",
+      "id": 8
     }
   ],
   "lostFounds": [

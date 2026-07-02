@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import { getLostFounds, type LostFoundItem } from '../api/lostFound'
 import EmptyState from '../components/EmptyState.vue'
 import { useFavoriteStore } from '../stores/favorite'
@@ -108,7 +109,12 @@ const handlePageChange = (page: number) => {
     <EmptyState v-if="filteredList.length === 0" text="暂无失物招领信息" />
 
     <div v-else class="card-grid">
-      <div v-for="item in filteredList" :key="item.id" class="list-card">
+      <RouterLink
+        v-for="item in filteredList"
+        :key="item.id"
+        :to="`/lost-found/${item.id}`"
+        class="list-card"
+      >
         <div class="card-image-wrap">
           <img
             :src="`https://picsum.photos/seed/lost${item.id}/400/300`"
@@ -132,7 +138,7 @@ const handlePageChange = (page: number) => {
             <button
               class="favorite-btn"
               :class="{ active: item.id && favoriteStore.isFavorite('lostFound', item.id) }"
-              @click="
+              @click.stop="
                 item.id && favoriteStore.toggleFavorite({
                   id: item.id,
                   type: 'lostFound',
@@ -146,7 +152,7 @@ const handlePageChange = (page: number) => {
             </button>
           </div>
         </div>
-      </div>
+      </RouterLink>
     </div>
 
     <!-- 分页 -->

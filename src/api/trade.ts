@@ -12,10 +12,18 @@ export interface TradeItem {
   image: string
   status: string
   description?: string
+  originalPrice?: number
+  negotiateMethod?: string
+  transactionMethod?: string
+  contact?: string
 }
 
 export function getTrades() {
   return http.get<TradeItem[]>('/trades')
+}
+
+export function getTrade(id: number) {
+  return http.get<TradeItem>(`/trades/${id}`)
 }
 
 export function createTrade(data: TradeItem) {

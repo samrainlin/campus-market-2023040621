@@ -97,7 +97,12 @@ const handlePageChange = (page: number) => {
     <EmptyState v-else-if="filteredList.length === 0" text="暂无符合条件的二手交易信息" />
 
     <div v-else class="card-grid">
-      <div v-for="item in filteredList" :key="item.id" class="list-card">
+      <RouterLink
+        v-for="item in filteredList"
+        :key="item.id"
+        :to="`/trade/${item.id}`"
+        class="list-card"
+      >
         <div class="card-image-wrap">
           <img :src="item.image" :alt="item.title" class="card-image" />
           <span class="card-badge">{{ item.condition }}</span>
@@ -113,7 +118,7 @@ const handlePageChange = (page: number) => {
             <button
               class="favorite-btn"
               :class="{ active: item.id && favoriteStore.isFavorite('trade', item.id) }"
-              @click="
+              @click.stop="
                 item.id && favoriteStore.toggleFavorite({
                   id: item.id,
                   type: 'trade',
@@ -128,7 +133,7 @@ const handlePageChange = (page: number) => {
             </button>
           </div>
         </div>
-      </div>
+      </RouterLink>
     </div>
 
     <div v-if="filteredList.length > 0" class="pagination-box">

@@ -11,10 +11,15 @@ export interface ErrandItem {
   publisher: string
   status: string
   description?: string
+  contact?: string
 }
 
 export function getErrands() {
   return http.get<ErrandItem[]>('/errands')
+}
+
+export function getErrand(id: number) {
+  return http.get<ErrandItem>(`/errands/${id}`)
 }
 
 export function createErrand(data: ErrandItem) {

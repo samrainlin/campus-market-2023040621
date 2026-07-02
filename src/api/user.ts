@@ -9,6 +9,13 @@ export interface User {
   grade: string
   avatar: string
   bio: string
+  studentId?: string
+  email?: string
+  phone?: string
+  wechat?: string
+  campus?: string
+  notify?: boolean
+  agree?: boolean
 }
 
 export function getUsers() {
@@ -17,4 +24,8 @@ export function getUsers() {
 
 export function createUser(data: User) {
   return http.post<User>('/users', data)
+}
+
+export function updateUser(id: number, data: Partial<User>) {
+  return http.patch<User>(`/users/${id}`, data)
 }

@@ -1,69 +1,66 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import FormField from '../components/FormField.vue'
 import { getUsers, createUser } from '../api/user'
 
 const router = useRouter()
 const submitting = ref(false)
 
-const form = reactive({
-  username: '',
-  password: '',
-  confirmPassword: '',
-  name: '',
-  college: '',
-  grade: '',
-})
+const nickname = ref('')
+const studentId = ref('')
+const college = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const agree = ref(false)
 
 const errors = reactive<Record<string, string>>({})
 
-function clearErrors() {
-  Object.keys(errors).forEach((key) => {
-    errors[key] = ''
-  })
-}
+const collegeOptions = ['计算机学院', '外国语学院', '经济学院', '理学院', '文学院', '艺术学院', '体育学院', '医学院']
 
-function validateForm(): boolean {
-  clearErrors()
+function validate(): boolean {
+  Object.keys(errors).forEach((k) => { errors[k] = '' })
   let valid = true
 
-  if (!form.username) {
-    errors.username = '请输入用户名'
+  if (!nickname.value) {
+    errors.nickname = '请输入昵称'
     valid = false
-  } else if (form.username.length < 3) {
-    errors.username = '用户名至少 3 个字符'
+  } else if (nickname.value.length < 2) {
+    errors.nickname = '昵称至少 2 个字符'
     valid = false
   }
 
-  if (!form.password) {
+  if (!studentId.value) {
+    errors.studentId = '请输入学号'
+    valid = false
+  }
+
+  if (!email.value) {
+    errors.email = '请输入邮箱'
+    valid = false
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    errors.email = '请输入有效的邮箱地址'
+    valid = false
+  }
+
+  if (!password.value) {
     errors.password = '请输入密码'
     valid = false
-  } else if (form.password.length < 6) {
+  } else if (password.value.length < 6) {
     errors.password = '密码至少 6 个字符'
     valid = false
   }
 
-  if (!form.confirmPassword) {
+  if (!confirmPassword.value) {
     errors.confirmPassword = '请确认密码'
     valid = false
-  } else if (form.confirmPassword !== form.password) {
+  } else if (confirmPassword.value !== password.value) {
     errors.confirmPassword = '两次密码不一致'
     valid = false
   }
 
-  if (!form.name) {
-    errors.name = '请输入姓名'
-    valid = false
-  }
-
-  if (!form.college) {
-    errors.college = '请输入学院'
-    valid = false
-  }
-
-  if (!form.grade) {
-    errors.grade = '请输入年级'
+  if (!agree.value) {
+    errors.agree = '请阅读并同意用户协议'
     valid = false
   }
 
@@ -71,40 +68,38 @@ function validateForm(): boolean {
 }
 
 async function handleSubmit() {
-  if (!validateForm()) {
-    return
-  }
+  if (!validate()) return
 
   submitting.value = true
 
   try {
-    // 检查用户名是否已存在
     const res = await getUsers()
-    const exists = res.data.some((item) => item.username === form.username)
+    const exists = res.data.some((item) => item.username === nickname.value)
 
     if (exists) {
-      errors.username = '该用户名已被使用'
+      errors.nickname = '该昵称已被使用'
       submitting.value = false
       return
     }
 
-    // 创建新用户
     await createUser({
-      username: form.username,
-      password: form.password,
-      name: form.name,
-      college: form.college,
-      grade: form.grade,
+      username: nickname.value,
+      password: password.value,
+      name: nickname.value,
+      college: college.value,
+      grade: '',
+      studentId: studentId.value,
+      email: email.value,
       avatar: '',
       bio: '新用户注册，欢迎来到校园轻集市。',
+      notify: true,
     })
 
     window.alert('注册成功，请前往登录')
     router.push('/login')
   } catch (error) {
-    console.error(error)
     const message = (error as Error)?.message || '网络错误'
-    window.alert(`注册失败：${message}\n\n请确认：\n1. 已启动 Mock 服务（运行命令：npm run mock）\n2. JSON Server 运行在端口 3001\n3. db.json 文件存在且包含 users 节点`)
+    window.alert(`注册失败：${message}`)
   } finally {
     submitting.value = false
   }
@@ -116,158 +111,181 @@ function goToLogin() {
 </script>
 
 <template>
-  <section class="page">
-    <div class="register-card">
-      <div class="register-header">
-        <h1>注册账号</h1>
-        <p>创建您的校园轻集市账号</p>
+  <div class="reg-wrap">
+    <div class="reg-box">
+      <div class="reg-logo">🎉 欢迎加入校园轻集市</div>
+      <div class="reg-slogan">创建你的校园账号，发现更多校园精彩</div>
+
+      <div class="steps-wrap">
+        <el-steps :active="0" finish-status="success" align-center>
+          <el-step title="填写资料" />
+          <el-step title="邮箱验证" />
+          <el-step title="完成注册" />
+        </el-steps>
       </div>
 
-      <form class="register-form" @submit.prevent="handleSubmit">
-        <FormField label="用户名" required :error="errors.username">
-          <input v-model.trim="form.username" type="text" placeholder="请输入用户名" />
-        </FormField>
+      <div class="form-group">
+        <div class="form-label">昵称</div>
+        <el-input size="large" v-model="nickname" placeholder="给自己取个好听的名字" />
+        <p v-if="errors.nickname" class="error-text">{{ errors.nickname }}</p>
+      </div>
 
-        <div class="password-row">
-          <FormField label="密码" required :error="errors.password">
-            <input v-model.trim="form.password" type="password" placeholder="请输入密码" />
-          </FormField>
-
-          <FormField label="确认密码" required :error="errors.confirmPassword">
-            <input v-model.trim="form.confirmPassword" type="password" placeholder="请再次输入密码" />
-          </FormField>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">学号</div>
+          <el-input size="large" v-model="studentId" placeholder="请输入学号" />
+          <p v-if="errors.studentId" class="error-text">{{ errors.studentId }}</p>
         </div>
-
-        <FormField label="姓名" required :error="errors.name">
-          <input v-model.trim="form.name" type="text" placeholder="请输入您的姓名" />
-        </FormField>
-
-        <div class="info-row">
-          <FormField label="学院" required :error="errors.college">
-            <input v-model.trim="form.college" type="text" placeholder="如：计算机学院" />
-          </FormField>
-
-          <FormField label="年级" required :error="errors.grade">
-            <input v-model.trim="form.grade" type="text" placeholder="如：2023级" />
-          </FormField>
+        <div class="form-group">
+          <div class="form-label">学院</div>
+          <el-select size="large" v-model="college" placeholder="选择学院" style="width: 100%;">
+            <el-option v-for="opt in collegeOptions" :key="opt" :label="opt" :value="opt" />
+          </el-select>
         </div>
+      </div>
 
-        <div class="actions">
-          <button type="submit" class="primary" :disabled="submitting">
-            {{ submitting ? '提交中...' : '立即注册' }}
-          </button>
-        </div>
+      <div class="form-group">
+        <div class="form-label">邮箱</div>
+        <el-input size="large" v-model="email" placeholder="请输入学校邮箱" />
+        <p v-if="errors.email" class="error-text">{{ errors.email }}</p>
+      </div>
 
-        <p class="login-link">
-          已有账号？
-          <a href="javascript:;" @click="goToLogin">去登录</a>
-        </p>
-      </form>
+      <div class="form-group">
+        <div class="form-label">密码</div>
+        <el-input size="large" type="password" v-model="password" placeholder="8-20位，包含字母和数字" show-password />
+        <p v-if="errors.password" class="error-text">{{ errors.password }}</p>
+      </div>
+
+      <div class="form-group">
+        <div class="form-label">确认密码</div>
+        <el-input size="large" type="password" v-model="confirmPassword" placeholder="再次输入密码" show-password />
+        <p v-if="errors.confirmPassword" class="error-text">{{ errors.confirmPassword }}</p>
+      </div>
+
+      <div class="agree-wrap">
+        <el-checkbox v-model="agree">
+          我已阅读并同意
+          <a href="#" style="color: #2563EB; text-decoration: none;" @click.prevent>《用户协议》</a>
+          和
+          <a href="#" style="color: #2563EB; text-decoration: none;" @click.prevent>《隐私政策》</a>
+        </el-checkbox>
+        <p v-if="errors.agree" class="error-text" style="margin-top: 6px;">{{ errors.agree }}</p>
+      </div>
+
+      <el-button
+        size="large"
+        type="primary"
+        :loading="submitting"
+        style="width: 100%; height: 46px; font-size: 15px; font-weight: 700;"
+        @click="handleSubmit"
+      >
+        {{ submitting ? '注册中...' : '立即注册' }}
+      </el-button>
+
+      <div class="login-link">
+        已有账号？
+        <a href="javascript:;" @click="goToLogin">去登录</a>
+      </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <style scoped>
-.page {
+.reg-wrap {
   min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #10B981 0%, #2563EB 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
+  position: relative;
 }
 
-.register-card {
+.reg-wrap::before {
+  content: "✨";
+  font-size: 400px;
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.reg-box {
+  background: white;
+  border-radius: 24px;
+  padding: 44px;
   width: 100%;
-  max-width: 480px;
-  background: #fff;
-  border-radius: 16px;
-  padding: 40px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+  position: relative;
+  z-index: 1;
 }
 
-.register-header {
+.reg-logo {
   text-align: center;
-  margin-bottom: 32px;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 8px;
 }
 
-.register-header h1 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  color: #1f2937;
+.reg-slogan {
+  text-align: center;
+  color: #64748B;
+  font-size: 13px;
+  margin-bottom: 28px;
 }
 
-.register-header p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
+.steps-wrap {
+  margin: 20px 0 28px 0;
 }
 
-.register-form {
-  display: grid;
-  gap: 16px;
+.form-group {
+  margin-bottom: 18px;
 }
 
-.password-row,
-.info-row {
+.form-label {
+  display: block;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 
-input {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
+.agree-wrap {
+  margin: 20px 0;
+  font-size: 13px;
 }
 
-.actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
+.agree-wrap a {
+  color: #2563EB;
+  text-decoration: none;
 }
 
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 28px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.primary {
-  background: #2563eb;
-  color: #fff;
-  width: 100%;
-  padding: 12px;
-  font-size: 15px;
-}
-
-.primary:hover {
-  background: #1d4ed8;
+.error-text {
+  color: #F56C6C;
+  font-size: 12px;
+  margin: 4px 0 0 0;
 }
 
 .login-link {
   text-align: center;
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
+  margin-top: 20px;
+  color: #94A3B8;
+  font-size: 12px;
 }
 
 .login-link a {
-  color: #2563eb;
+  color: #2563EB;
   text-decoration: none;
-  margin-left: 4px;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
+  font-weight: 600;
+  margin-left: 2px;
 }
 </style>
