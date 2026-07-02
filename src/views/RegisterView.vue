@@ -22,7 +22,7 @@ function validate(): boolean {
   Object.keys(errors).forEach((k) => { errors[k] = '' })
   let valid = true
 
-  if (!nickname.value) {
+  if (!nickname.value.trim()) {
     errors.nickname = '请输入昵称'
     valid = false
   } else if (nickname.value.length < 2) {
@@ -30,12 +30,17 @@ function validate(): boolean {
     valid = false
   }
 
-  if (!studentId.value) {
+  if (!studentId.value.trim()) {
     errors.studentId = '请输入学号'
     valid = false
   }
 
-  if (!email.value) {
+  if (!college.value) {
+    errors.college = '请选择学院'
+    valid = false
+  }
+
+  if (!email.value.trim()) {
     errors.email = '请输入邮箱'
     valid = false
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
@@ -46,8 +51,14 @@ function validate(): boolean {
   if (!password.value) {
     errors.password = '请输入密码'
     valid = false
-  } else if (password.value.length < 6) {
-    errors.password = '密码至少 6 个字符'
+  } else if (password.value.length < 8) {
+    errors.password = '密码至少 8 个字符'
+    valid = false
+  } else if (password.value.length > 20) {
+    errors.password = '密码最多 20 个字符'
+    valid = false
+  } else if (!/[a-zA-Z]/.test(password.value) || !/[0-9]/.test(password.value)) {
+    errors.password = '密码必须同时包含字母和数字'
     valid = false
   }
 
@@ -65,6 +76,17 @@ function validate(): boolean {
   }
 
   return valid
+}
+
+function extractErrorMessage(error: unknown): string {
+  if (!error) return '网络错误'
+  if (error instanceof Error) return error.message
+  if (typeof error === 'object') {
+    const err = error as { response?: { data?: { message?: string } }; message?: string }
+    if (err.response?.data?.message) return err.response.data.message
+    if (err.message) return err.message
+  }
+  return '网络错误，请重试'
 }
 
 async function handleSubmit() {
@@ -98,7 +120,7 @@ async function handleSubmit() {
     window.alert('注册成功，请前往登录')
     router.push('/login')
   } catch (error) {
-    const message = (error as Error)?.message || '网络错误'
+    const message = extractErrorMessage(error)
     window.alert(`注册失败：${message}`)
   } finally {
     submitting.value = false
@@ -141,6 +163,7 @@ function goToLogin() {
           <el-select size="large" v-model="college" placeholder="选择学院" style="width: 100%;">
             <el-option v-for="opt in collegeOptions" :key="opt" :label="opt" :value="opt" />
           </el-select>
+          <p v-if="errors.college" class="error-text">{{ errors.college }}</p>
         </div>
       </div>
 

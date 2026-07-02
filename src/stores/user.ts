@@ -53,11 +53,15 @@ export const useUserStore = defineStore('user', {
       }
 
       const user = res.data.find((item) => {
-        return item.username === username && item.password === password
+        const matchesUsername = item.username === username
+        const matchesStudentId = item.studentId === username
+        const matchesEmail = item.email === username
+        const matchesPassword = item.password === password
+        return (matchesUsername || matchesStudentId || matchesEmail) && matchesPassword
       })
 
       if (!user) {
-        throw new Error('账号或密码错误')
+        throw new Error('账号或密码错误（可用用户名、学号或邮箱登录）')
       }
 
       this.currentUser = user

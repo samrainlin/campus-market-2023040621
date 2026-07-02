@@ -42,7 +42,7 @@
     },
     {
       "username": "东京下小雨",
-      "password": "zjh0720",
+      "password": "zjh0720&",
       "name": "东京下小雨",
       "college": "计算机学院",
       "grade": "",
@@ -52,6 +52,32 @@
       "bio": "新用户注册，欢迎来到校园轻集市。",
       "notify": true,
       "id": 5
+    },
+    {
+      "username": "piaji",
+      "password": "zjh0720&",
+      "name": "piaji",
+      "college": "经济学院",
+      "grade": "",
+      "studentId": "2023040620",
+      "email": "2810224868@qq.com",
+      "avatar": "",
+      "bio": "新用户注册，欢迎来到校园轻集市。",
+      "notify": true,
+      "id": 6
+    },
+    {
+      "username": "piajii",
+      "password": "zjh0720&",
+      "name": "piajii",
+      "college": "艺术学院",
+      "grade": "",
+      "studentId": "2023040622",
+      "email": "2810224868@qq.com",
+      "avatar": "",
+      "bio": "新用户注册，欢迎来到校园轻集市。",
+      "notify": true,
+      "id": 7
     }
   ],
   "trades": [
